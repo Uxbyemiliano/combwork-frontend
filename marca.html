@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#11231A">
+<title>Combwork — Sistema gráfico y de generación de imagen</title>
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .toc{position:sticky;top:var(--header-h);z-index:50;background:rgba(247,244,234,.94);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);margin-inline:calc(var(--gutter) * -1);padding-inline:var(--gutter);max-width:100vw}
+  .toc-row{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;min-width:0;-webkit-overflow-scrolling:touch}
+  .toc-row::-webkit-scrollbar{display:none}
+  .toc-row a{white-space:nowrap;font-size:12.5px;font-weight:500;padding:13px 11px;color:var(--ink-soft);
+    border-bottom:2.5px solid transparent;min-height:44px;display:inline-flex;align-items:center}
+  .toc-row a:hover{color:var(--forest-900);border-bottom-color:var(--gold-500)}
+
+  .prompt{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;margin-bottom:16px}
+  .prompt-head{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;
+    padding:16px 18px;border-bottom:1px solid var(--line-soft);background:var(--paper-warm)}
+  .prompt-head h4{font-size:15.5px;margin-bottom:3px}
+  .prompt-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .prompt-body{padding:16px 18px}
+  pre.p{margin:0;font-family:var(--f-mono);font-size:12px;line-height:1.65;color:var(--ink);
+    white-space:pre-wrap;word-break:break-word;background:#FCFAF4;border:1px solid var(--line-soft);
+    border-radius:var(--r-sm);padding:14px}
+  .copy{margin-top:10px}
+  .copy.ok{--btn-bg:var(--forest-500)}
+  .where{font-size:12.5px;color:var(--ink-faint);margin-top:10px}
+  .where b{color:var(--forest-700);font-family:var(--f-mono);font-size:11.5px}
+
+  .yesno{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .yesno .card{height:100%}
+  .yesno ul{margin:0;padding-left:18px}
+  .yesno li{font-size:13.6px;color:var(--ink-soft);margin-bottom:7px}
+  .yesno li b{color:var(--forest-900)}
+
+  .iconwall{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:10px}
+  .iconcell{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:14px 8px;text-align:center}
+  .iconcell svg{width:34px;height:34px;color:var(--forest-700)}
+  .iconcell span{display:block;font-family:var(--f-mono);font-size:9.5px;color:var(--ink-faint);margin-top:8px;letter-spacing:.03em}
+
+  .principle{display:grid;grid-template-columns:34px 1fr;gap:14px;padding:16px 0;border-bottom:1px solid var(--line-soft)}
+  .principle .n{font-family:var(--f-mono);font-size:12px;color:var(--gold-700);padding-top:3px}
+  .principle h4{font-size:15.5px;margin-bottom:5px}
+  .principle p{font-size:13.8px;color:var(--ink-soft);margin:0}
+
+  @media (max-width:700px){
+    .yesno{grid-template-columns:1fr}
+    pre.p{font-size:11.5px;padding:12px}
+  }
+</style>
+</head>
+<body class="app-shell">
+
+<header class="site-header">
+  <a class="brand" href="index.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 2l8.66 5v10L12 22l-8.66-5V7z"/><path d="M12 8.2l3.9 2.25v4.5L12 17.2l-3.9-2.25v-4.5z" opacity=".55"/></svg>
+    <span class="word">Combwork</span>
+  </a>
+  <span class="header-meta">Sistema gráfico · v0.2</span>
+</header>
+
+<main class="wrap" style="padding-top:0;padding-bottom:80px;max-width:920px">
+
+  <nav class="toc">
+    <div class="toc-row">
+      <a href="#tesis">La tesis</a><a href="#alcance">Qué se genera</a><a href="#principios">Principios</a>
+      <a href="#anatomia">Anatomía del prompt</a><a href="#bloques">Bloques fijos</a><a href="#consistencia">Consistencia</a>
+      <a href="#biblioteca">Biblioteca</a><a href="#logo">Logo</a><a href="#registro">Registro de slots</a><a href="#sueltos">Elementos sueltos</a><a href="#iconos">Íconos</a><a href="#entrega">Entrega</a>
+    </div>
+  </nav>
+
+  <!-- ══════ TESIS ══════ -->
+  <section id="tesis" style="padding-top:44px">
+    <div class="eyebrow">Punto de partida</div>
+    <h1 class="t-h2 mb4">Todo lo que generemos tiene que poder defenderse con una sola frase.</h1>
+    <p class="lead mb4">La frase es esta: <strong>cuánta capacidad útil obtienes por cada unidad de energía que gastas en la estructura que la sostiene.</strong> Es el problema que resolvió la abeja con cera y el que resuelve un operador con potencia. Si una imagen no habla de esa relación, no es de Combwork por más hexágonos que tenga.</p>
+
+    <div class="card card--flat mb5">
+      <h3 class="t-h4 mb3">La historia, para escribir con ella</h3>
+      <p class="sub" style="font-size:14px;line-height:1.65;margin-bottom:10px">Para una abeja la cera es cara: se estima que producir un kilo cuesta varios kilos de miel, o sea energía metabólica. Por eso la evolución no buscó la celda más bonita, buscó la que encierra más volumen con menos pared. La respuesta fue el hexágono, y en 1999 Thomas Hales lo demostró formalmente: de todas las maneras de dividir una superficie en celdas iguales, la retícula hexagonal es la de menor perímetro total.</p>
+      <p class="sub" style="font-size:14px;line-height:1.65;margin:0">Un data center repite el problema con otro vocabulario. La potencia que se va en enfriar, respaldar y distribuir es la cera. La carga de TI que produce es la miel. Combwork mide esa proporción. <strong>La marca no es «tecnología con estética de colmena»: es la idea de que la eficiencia es una forma resuelta, no un adorno.</strong></p>
+    </div>
+
+    <div class="note"><p style="margin:0"><strong>Tono de la imagen.</strong> Sobrio, casi de informe técnico. Nada de abejas caricatura, nada de miel goteando, nada de mascota. La colmena aparece como geometría y como material, no como personaje. El producto emite un juicio sobre el trabajo de alguien: la gráfica tiene que sonar a analista, no a campaña de marca.</p></div>
+  </section>
+
+  <!-- ══════ ALCANCE ══════ -->
+  <section id="alcance">
+    <div class="eyebrow">Regla de oro</div>
+    <h2 class="t-h2 mb4">Qué se genera con IA y qué nunca</h2>
+    <p class="lead mb5">El error más caro sería generar cosas que necesitan ser exactas. Los modelos de imagen inventan; lo que tiene que ser correcto se dibuja en código o en Figma.</p>
+
+    <div class="yesno">
+      <div class="card">
+        <span class="chip chip--ok mb3">Sí generar</span>
+        <ul>
+          <li><b>Fondos y texturas</b> de secciones, login, portada del reporte y correos.</li>
+          <li><b>Ilustración editorial</b> de concepto: las cuatro etapas, estados vacíos, cabeceras.</li>
+          <li><b>Imagen social</b> (OG, LinkedIn) con el texto puesto después en Figma.</li>
+          <li><b>Exploración</b> de dirección visual antes de comprometer horas de diseño.</li>
+          <li><b>Bodegones abstractos</b> de materia: cera, panel, luz sobre superficie mate.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="chip chip--crit mb3">Nunca generar</span>
+        <ul>
+          <li><b>El logo.</b> Un logo se construye, no se sortea. Vive en <span class="mono">assets/logo.svg</span>.</li>
+          <li><b>Gráficas con datos.</b> Radar, barras y percentiles salen del SVG que ya calcula el score real.</li>
+          <li><b>Capturas de interfaz.</b> Si necesitas mostrar el producto, capturas el producto.</li>
+          <li><b>El diagrama de arquitectura.</b> Tiene que ser verificable por los devs.</li>
+          <li><b>Retratos del fundador o del equipo.</b> Es una persona real en un documento comercial: va foto real.</li>
+          <li><b>Tipografía dentro de la imagen</b> para piezas definitivas. El modelo escribe bien, pero no con nuestra tipografía ni nuestro interletrado.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ PRINCIPIOS ══════ -->
+  <section id="principios">
+    <div class="eyebrow">Dirección</div>
+    <h2 class="t-h2 mb4">Seis principios que gobiernan cualquier imagen</h2>
+    <div class="principle"><span class="n">01</span><div>
+      <h4>La paleta es cerrada, no una sugerencia</h4>
+      <p>Verde bosque profundo, dorado apagado y crema de papel. Nada de azules tecnológicos ni morados: esa es la paleta de todos los demás en el sector, y el argumento de Combwork es no parecerse a un dashboard más.</p></div></div>
+    <div class="principle"><span class="n">02</span><div>
+      <h4>Materia mate, nunca brillo</h4>
+      <p>Cera, papel, latón sin pulir, piedra. Cero cromo, cero plástico brillante, cero neón. La superficie mate es lo que hace que el dorado se lea como institución y no como lujo barato.</p></div></div>
+    <div class="principle"><span class="n">03</span><div>
+      <h4>Una sola fuente de luz, suave y lateral</h4>
+      <p>Luz direccional desde arriba a la izquierda, sombras largas y blandas. Es la luz de un objeto sobre un escritorio, no la de un estudio de producto.</p></div></div>
+    <div class="principle"><span class="n">04</span><div>
+      <h4>El hexágono es estructura, no estampa</h4>
+      <p>Aparece como retícula que organiza la composición, como celda, como módulo repetido. Si se puede quitar el hexágono y la imagen sigue significando lo mismo, el hexágono estaba de adorno.</p></div></div>
+    <div class="principle"><span class="n">05</span><div>
+      <h4>El aire es parte del argumento</h4>
+      <p>Composición tranquila, mucho espacio vacío, el sujeto descentrado. La densidad visual contradice el mensaje: vendemos que el desperdicio se ve.</p></div></div>
+    <div class="principle" style="border:none"><span class="n">06</span><div>
+      <h4>Sin personas, salvo excepción declarada</h4>
+      <p>Nada de ejecutivos genéricos ni manos señalando pantallas. Si hace falta escala humana, entra un objeto de escritorio, no una persona.</p></div></div>
+  </section>
+
+  <!-- ══════ ANATOMÍA ══════ -->
+  <section id="anatomia">
+    <div class="eyebrow">Método</div>
+    <h2 class="t-h2 mb4">Anatomía de un prompt Combwork</h2>
+    <p class="lead mb5">Los modelos de Gemini responden mejor a un párrafo descriptivo que a una lista de palabras sueltas. La estructura es siempre la misma, en seis bloques y en inglés, que es donde estos modelos están mejor entrenados.</p>
+
+    <div class="card mb4">
+      <pre class="p" id="anat">1 · SUJETO      qué es y qué está haciendo, en concreto
+2 · ENCUADRE    ángulo, distancia, tipo de lente o de vista
+3 · MATERIA     de qué está hecho y cómo le pega la luz
+4 · PALETA      los hex exactos, escritos con su nombre
+5 · COMPOSICIÓN dónde va el sujeto y cuánto aire queda
+6 · RESTRICCIÓN qué no debe aparecer + proporción y resolución</pre>
+    </div>
+
+    <div class="note mb4"><p style="margin:0"><strong>Truco que sí mueve la aguja:</strong> nombrar los colores por su hex y además describirlos con palabras («deep forest green, almost black»). El modelo no lee el código como valor exacto, pero la combinación de nombre y descripción acota mucho más que cualquiera de las dos sola.</p></div>
+  </section>
+
+  <!-- ══════ BLOQUES FIJOS ══════ -->
+  <section id="bloques">
+    <div class="eyebrow">Copiar y pegar</div>
+    <h2 class="t-h2 mb4">Los dos bloques que van en todos los prompts</h2>
+    <p class="lead mb5">Estos dos párrafos no cambian nunca. Son los que hacen que doce imágenes generadas en días distintos parezcan de la misma marca. Pégalos al final de cualquier descripción.</p>
+
+    <div class="prompt">
+      <div class="prompt-head">
+        <div><h4>Bloque de estilo Combwork</h4><span class="sub">va siempre, al final del sujeto</span></div>
+        <span class="chip chip--gold">fijo</span>
+      </div>
+      <div class="prompt-body">
+        <pre class="p">STYLE: Restrained editorial illustration for an institutional engineering report. Strictly limited palette: deep forest green almost black (#11231A), mid forest green (#2C5B3E), muted antique gold (#B08A34), pale gold (#D6B667), warm paper cream (#F7F4EA). Matte surfaces only — wax, uncoated paper, unpolished brass, stone. Single soft directional light from the upper left, long soft shadows, faint paper grain. Underlying geometry built on hexagonal modules. Calm composition with generous negative space, subject placed off-centre. Sober analyst tone, not marketing.</pre>
+        <button class="btn btn--sm copy">Copiar bloque de estilo</button>
+      </div>
+    </div>
+
+    <div class="prompt">
+      <div class="prompt-head">
+        <div><h4>Bloque de restricciones</h4><span class="sub">va siempre, al final del prompt</span></div>
+        <span class="chip chip--crit">fijo</span>
+      </div>
+      <div class="prompt-body">
+        <pre class="p">DO NOT INCLUDE: any text, letters, numbers or watermarks. No logos. No user interface, dashboards, screens or charts. No people, hands or faces. No cartoon bees, no mascots, no dripping honey. No neon, glow, lens flare, chrome or glossy plastic. No blue or purple technology gradients, no cyberpunk. No cluttered composition. No stock-photo look.</pre>
+        <button class="btn btn--sm copy">Copiar restricciones</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ CONSISTENCIA ══════ -->
+  <section id="consistencia">
+    <div class="eyebrow">Lo difícil</div>
+    <h2 class="t-h2 mb4">Cómo lograr que doce imágenes parezcan una familia</h2>
+    <div class="grid grid-2 mb4">
+      <div class="card"><h4 class="t-h4">Genera la primera con calma</h4>
+        <p class="sub mb0">Itera una sola imagen hasta que sea exactamente la dirección. Esa se vuelve la <strong>imagen madre</strong> y no se vuelve a tocar.</p></div>
+      <div class="card"><h4 class="t-h4">Después trabaja por referencia</h4>
+        <p class="sub mb0">Nano Banana acepta hasta 14 imágenes de referencia y responde bien si le declaras el papel de cada una: «usa la Imagen A solo para el estilo y la paleta, la Imagen B para la composición».</p></div>
+      <div class="card"><h4 class="t-h4">Una proporción por familia</h4>
+        <p class="sub mb0">Las proporciones disponibles incluyen 1:1, 3:2, 2:3, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9 y 21:9. Pide la que vas a usar; recortar después rompe la composición.</p></div>
+      <div class="card"><h4 class="t-h4">Edita conversando, no reescribas</h4>
+        <p class="sub mb0">Para ajustar, pide el cambio sobre la imagen ya generada («baja la saturación del dorado un 30% y alarga la sombra»). Regenerar desde cero te devuelve otra imagen distinta.</p></div>
+    </div>
+    <div class="note"><p style="margin:0"><strong>Prompt de continuidad, para la segunda imagen en adelante:</strong><br>
+      <span class="mono" style="font-size:12px">Use the attached image as the single reference for style, palette, lighting and material. Keep them identical. Change only the subject to: [nuevo sujeto]. Same aspect ratio.</span></p></div>
+  </section>
+
+  <!-- ══════ BIBLIOTECA ══════ -->
+  <section id="biblioteca">
+    <div class="eyebrow">Biblioteca</div>
+    <h2 class="t-h2 mb3">Prompts listos, pieza por pieza</h2>
+    <p class="lead mb5">Cada ficha dice dónde va el archivo resultante. Todos asumen que pegas después el bloque de estilo y el de restricciones.</p>
+
+    <!-- 1 -->
+    <div class="prompt">
+      <div class="prompt-head">
+        <div><h4>01 · Fondo del hero</h4><span class="sub">Detrás del titular de la landing</span>
+          <div class="prompt-meta"><span class="chip">21:9</span><span class="chip">4K</span><span class="chip chip--gold">imagen madre</span></div></div>
+      </div>
+      <div class="prompt-body">
+        <pre class="p">A vast field of hexagonal cells seen from a low oblique angle, receding into darkness. The cells nearest the camera are made of pale translucent wax and are full and dense; as they recede they become hollow, empty and unlit. Extreme depth of field, the far edge dissolving into deep green shadow. No horizon line. The composition leaves the entire left third almost empty for typography.</pre>
+        <button class="btn btn--sm copy">Copiar</button>
+        <p class="where">Va en <b>index.html</b> como capa detrás de <b>.hero-comb</b>, con opacidad ~0.35 y el degradado verde encima.</p>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="prompt">
+      <div class="prompt-head">
+        <div><h4>02 · Textura de panal para fondos</h4><span class="sub">Secciones claras y separadores</span>
+          <div class="prompt-meta"><span class="chip">1:1</span><span class="chip">2K</span></div></div>
+      </div>
+      <div class="prompt-body">
+        <pre class="p">Macro photograph of an empty wax honeycomb pressed flat, shot straight from above, filling the entire frame edge to edge. Natural irregularities in the wax walls, some cells slightly deformed. Cream and pale gold wax on a neutral cream background. Very low contrast, almost washed out, so it can sit behind text.</pre>
+        <button class="btn btn--sm copy">Copiar</button>
+        <p class="where">Se usa al 6–10% de opacidad sobre <b>--paper-warm</b>. Ojo: el modelo no produce texturas que empaten perfecto al repetirse; pídela grande y úsala como pieza única, no como patrón repetido.</p>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="prompt">
+      <div class="prompt-head">
+        <div><h4>03 · Etapa 1 — medir</h4><span class="sub">Ilustración editorial del recorrido</span>
+          <div class="prompt-meta"><span class="chip">4:3</span><span class="chip">2K</span></div></div>
+      </div>
+      <div class="prompt-body">
+        <pre class="p">A single brass caliper resting on a sheet of uncoated cream paper, measuring the wall thickness of one wax hexagonal cell. Three-quarter view from above, close but not macro. The paper is otherwise blank. The instrument is old, matte and slightly worn, clearly a working tool rather than a display object.</pre>
+        <button class="btn btn--sm copy">Copiar</button>
+        <p class="where">Sección «Cómo funciona», nodo 01. También sirve de encabezado del correo de invitación.</p>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="prompt">
+      <div class="prompt-head">
+        <div><h4>04 · Etapa 2 — el costo</h4><span class="sub">La capacidad que no produce</span>
+          <div class="prompt-meta"><span class="chip">4:3</span><span class="chip">2K</span></div></div>
+      </div>
+      <div class="prompt-body">
+        <pre class="p">Two blocks of raw beeswax of very different size sitting side by side on a stone surface. The large block is rough, dull and oversized; the small one beside it is dense, smooth and warm gold. The scale difference is the whole subject. Hard enough light to cast one long shadow to the right.</pre>
+        <button class="btn btn--sm copy">Copiar</button>
+        <p class="where">Nodo 02 y bloque de resultado. Es la metáfora literal del overhead contra la carga útil.</p>
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="prompt">
+      <div class="prompt-head">
+        <div><h4>05 · Etapa 3 — compararse</h4><span class="sub">Benchmark</span>
+          <div class="prompt-meta"><span class="chip">4:3</span><span class="chip">2K</span></div></div>
+      </div>
+      <div class="prompt-body">
+        <pre class="p">Nine small square wax tiles laid out in a loose grid on cream paper, each with a slightly different hexagonal cell density. One tile near the upper right is lit noticeably warmer than the rest, as if a single beam found it. The others sit in even, flat shadow. Straight overhead view.</pre>
+        <button class="btn btn--sm copy">Copiar</button>
+        <p class="where">Nodo 03 y cabecera de la pantalla de resultado del benchmark.</p>
+      </div>
+    </div>
+
+    <!-- 6 -->
+    <div class="prompt">
+      <div class="prompt-head">
+        <div><h4>06 · Etapa 4 — el entregable</h4><span class="sub">El reporte como objeto</span>
+          <div class="prompt-meta"><span class="chip">3:2</span><span class="chip">2K</span></div></div>
+      </div>
+      <div class="prompt-body">
+        <pre class="p">A thin printed booklet lying closed on a dark green desk, photographed at a low three-quarter angle. The cover is deep forest green with a single small gold geometric mark blind-embossed into it, no readable text. Beside it, a brass paperweight shaped as a solid hexagon. Warm raking light from the upper left across the paper texture.</pre>
+        <button class="btn btn--sm copy">Copiar</button>
+        <p class="where">Nodo 04, pantalla de entrega y publicaciones donde se presume el entregable.</p>
+      </div>
+    </div>
+
+    <!-- 7 -->
+    <div class="prompt">
+      <div class="prompt-head">
+        <div><h4>07 · Portada del reporte <span class="mono" style="font-size:11px;color:var(--gold-700)">pdf-01-portada</span></h4><span class="sub">Fondo de la página 1 del PDF</span>
+          <div class="prompt-meta"><span class="chip">2:3</span><span class="chip">4K</span></div></div>
+      </div>
+      <div class="prompt-body">
+        <pre class="p">An abstract vertical composition: a dense cluster of hexagonal cells occupying only the lower right corner, dissolving into deep flat forest green across the rest of the frame. The cells are rendered as fine gold linework, not solid shapes. Almost the entire upper two thirds is empty dark field.</pre>
+        <button class="btn btn--sm copy">Copiar</button>
+        <p class="where">Va detrás de <b>.p-cover</b> en <b>reporte.html</b>, respetando el área libre donde entra el título.</p>
+      </div>
+    </div>
+
+    <!-- 8 -->
+    <div class="prompt">
+      <div class="prompt-head">
+        <div><h4>08 · Imagen social / OG</h4><span class="sub">LinkedIn y previsualización de enlace</span>
+          <div class="prompt-meta"><span class="chip">16:9</span><span class="chip">2K</span></div></div>
+      </div>
+      <div class="prompt-body">
+        <pre class="p">A honeycomb structure cut cleanly in half, seen edge-on so the wall thickness of every cell is visible as a fine line. Left half in warm gold light, right half falling into deep green shadow. Centred low in the frame, leaving the top half as clean empty dark space.</pre>
+        <button class="btn btn--sm copy">Copiar</button>
+        <p class="where">El texto se pone <strong>después</strong>, en Figma, con Source Serif 4. Aunque el modelo escribe bien, no reproduce nuestro interletrado ni nuestra jerarquía.</p>
+      </div>
+    </div>
+
+    <!-- 9 -->
+    <div class="prompt">
+      <div class="prompt-head">
+        <div><h4>09 · Fondo del login <span class="mono" style="font-size:11px;color:var(--gold-700)">login-01-fondo</span></h4><span class="sub">Detrás de la tarjeta de acceso</span>
+          <div class="prompt-meta"><span class="chip">2:3</span><span class="chip">2K</span></div></div>
+      </div>
+      <div class="prompt-body">
+        <pre class="p">A single vertical shaft of warm light falling across a wall of dark, dry, empty honeycomb. Most of the frame stays in near black green. The lit band is narrow and sits slightly left of centre. Quiet, architectural, almost a photograph of an interior.</pre>
+        <button class="btn btn--sm copy">Copiar</button>
+        <p class="where">Sustituye el <b>&lt;svg class="auth-bg"&gt;</b> en <b>login.html</b>. Tras el rediseño del acceso, el fondo ocupa toda la pantalla detrás de la tarjeta centrada, no una columna lateral.</p>
+      </div>
+    </div>
+
+    <!-- 10 -->
+    <div class="prompt">
+      <div class="prompt-head">
+        <div><h4>10 · Estado vacío del panel <span class="mono" style="font-size:11px;color:var(--gold-700)">panel-01-vacio</span></h4><span class="sub">Cuando todavía no hay leads</span>
+          <div class="prompt-meta"><span class="chip">1:1</span><span class="chip">1K</span><span class="chip chip--gold">recorte PNG</span></div></div>
+      </div>
+      <div class="prompt-body">
+        <pre class="p">A single empty wooden hive frame, isolated at the centre of the frame on a completely flat pure white background, with generous empty margin on all sides. No surface, no floor — the frame appears to float. The frame is clean and ready, with nothing built inside it yet. Soft directional light from the upper left casting a gentle attached shadow. The background must be one uniform white with no gradient, so the object can be cut out cleanly.</pre>
+        <button class="btn btn--sm copy">Copiar</button>
+        <p class="where">Recorta a PNG con alfa y colócalo en el bloque <b>.artcut</b> de <b>panel.html</b>, dentro de <b>#leadsEmpty</b>. Un estado vacío es una invitación a actuar, no un aviso de error — por eso es objeto, no fondo.</p>
+      </div>
+    </div>
+
+    <!-- 11 -->
+    <div class="prompt">
+      <div class="prompt-head">
+        <div><h4>11 · Cabecera de correo de outreach</h4><span class="sub">Campañas de invitación</span>
+          <div class="prompt-meta"><span class="chip">21:9</span><span class="chip">2K</span></div></div>
+      </div>
+      <div class="prompt-body">
+        <pre class="p">A narrow horizontal band of hexagonal cells drawn as fine gold lines on deep forest green, gradually increasing in density from left to right. Flat and graphic rather than photographic, like a printed endpaper. No focal point, meant to be read as a rule or a border.</pre>
+        <button class="btn btn--sm copy">Copiar</button>
+        <p class="where">Encabezado de las tres plantillas del módulo de campañas. Peso máximo 80 KB para que no se corte en Gmail.</p>
+      </div>
+    </div>
+
+    <!-- 13 -->
+    <div class="prompt">
+      <div class="prompt-head">
+        <div><h4>13 · Sala de data center <span class="mono" style="font-size:11px;color:var(--gold-700)">dc-01-sala</span></h4>
+          <span class="sub">Sección «El problema», columna izquierda</span>
+          <div class="prompt-meta"><span class="chip">4:5</span><span class="chip">2K</span><span class="chip chip--gold">slot activo</span></div></div>
+      </div>
+      <div class="prompt-body">
+        <pre class="p">Interior of a modern data hall photographed from the end of a cold aisle, vertical composition. Two long rows of server cabinets recede toward a vanishing point. The room is almost dark; the only light is a narrow warm shaft falling between the rows, catching the edges of the cabinets. A handful of small amber status lights are visible on the racks, nothing else glows. Deep forest green shadow fills the sides of the frame. Architectural photography, wide lens, no motion blur.</pre>
+        <button class="btn btn--sm copy">Copiar</button>
+        <p class="where">Guardar como <b>assets/img/dc-01-sala.webp</b>. En <b>index.html</b>, sustituir el bloque <b>.ph</b> del figure por <b>&lt;img src="assets/img/dc-01-sala.webp" alt=""&gt;</b> y borrar el <b>span.tagname</b>.</p>
+      </div>
+    </div>
+
+    <!-- 14 -->
+    <div class="prompt">
+      <div class="prompt-head">
+        <div><h4>14 · Pasillo de contención <span class="mono" style="font-size:11px;color:var(--gold-700)">dc-02-pasillo</span></h4>
+          <span class="sub">Sección de referencia de PUE</span>
+          <div class="prompt-meta"><span class="chip">16:9</span><span class="chip">2K</span><span class="chip chip--gold">slot activo</span></div></div>
+      </div>
+      <div class="prompt-body">
+        <pre class="p">A hot aisle containment corridor seen head on, perfectly symmetrical, the two cabinet walls converging toward a lit doorway at the far end. The corridor floor is polished concrete. Everything is in deep green near darkness except the far doorway, which glows warm gold and is the only light source. Empty, no people. Long exposure stillness, architectural photography.</pre>
+        <button class="btn btn--sm copy">Copiar</button>
+        <p class="where">Guardar como <b>assets/img/dc-02-pasillo.webp</b>. Mismo reemplazo que la anterior.</p>
+      </div>
+    </div>
+
+    <!-- 12 -->
+    <div class="prompt">
+      <div class="prompt-head">
+        <div><h4>12 · Ícono de app y avatar social</h4><span class="sub">Favicon grande, perfil de LinkedIn</span>
+          <div class="prompt-meta"><span class="chip">1:1</span><span class="chip">1K</span></div></div>
+      </div>
+      <div class="prompt-body">
+        <pre class="p">A single solid hexagon of unpolished brass resting on deep green stone, photographed straight from above, filling the centre of a square frame with even margins. One soft shadow to the lower right. Nothing else in the frame.</pre>
+        <button class="btn btn--sm copy">Copiar</button>
+        <p class="where">Solo como avatar fotográfico. <strong>El logo de la marca sigue siendo el SVG</strong>, esto no lo sustituye.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ LOGO ══════ -->
+  <section id="logo">
+    <div class="eyebrow">Pendiente que bloquea el resto</div>
+    <h2 class="t-h2 mb4">Tres direcciones de logo para explorar</h2>
+    <p class="lead mb4">Tres conceptos distintos del mismo storytelling, para generar, comparar e imprimir a tamaño real antes de vectorizar. Cada uno lee el hexágono desde un ángulo distinto de la historia: <strong>geometría óptima</strong> (Hales), <strong>energía almacenada</strong> (la cera) y <strong>medición expuesta</strong> (el corte transversal que revela el interior).</p>
+
+    <div class="note mb5"><p style="margin:0"><strong>Cómo usar estos prompts.</strong> Pide siempre fondo blanco sólido y el símbolo solo, sin nombre de marca ni tipografía — un modelo de imagen no reproduce letras limpias a escala de ícono, y el texto se compone después en Figma con Source Serif 4. Genera cada uno en al menos tres variantes (regenera el mismo prompt 3 veces) y elige antes de vectorizar; la primera versión casi nunca es la mejor de las tres. Pide explícitamente <span class="mono" style="font-size:11px">vector-style, flat, no gradients, no drop shadow</span> para que el resultado se acerque a algo trazable.</p></div>
+
+    <div class="prompt">
+      <div class="prompt-head">
+        <div><h4>Concepto 1 · Geometría óptima</h4><span class="sub">Del teorema del panal: el hexágono como la forma que resuelve el problema</span>
+          <div class="prompt-meta"><span class="chip">1:1</span><span class="chip">2K</span><span class="chip chip--gold">exploración</span></div></div>
+      </div>
+      <div class="prompt-body">
+        <pre class="p">A minimalist vector-style logomark for an energy-efficiency company: a single hexagon outline built from six equal straight segments, with one internal line dividing it into two asymmetric cells of different size, suggesting efficient subdivision of space. Flat design, two colours only — deep forest green (#11231A) and muted antique gold (#B08A34) — on a solid white background. No gradients, no drop shadows, no 3D bevel, no text, no letters. Clean geometric precision, optically balanced stroke width, suitable for a favicon at small size.</pre>
+        <button class="btn btn--sm copy">Copiar</button>
+        <p class="where">Léelo como el logo más "corporativo" de los tres: honesto con la historia matemática, funciona bien a tamaño de favicon por su simplicidad.</p>
+      </div>
+    </div>
+
+    <div class="prompt">
+      <div class="prompt-head">
+        <div><h4>Concepto 2 · Energía almacenada</h4><span class="sub">De la cera como energía: el hexágono con un núcleo que se enciende</span>
+          <div class="prompt-meta"><span class="chip">1:1</span><span class="chip">2K</span><span class="chip chip--gold">exploración</span></div></div>
+      </div>
+      <div class="prompt-body">
+        <pre class="p">A minimalist vector-style logomark: a hexagon outline in deep forest green (#11231A) with a smaller solid hexagon in muted antique gold (#B08A34) nested concentrically at its centre, both perfectly aligned, connected by six short radiating lines from the inner shape to the outer vertices like spokes. Flat design, solid white background, no gradients, no drop shadows, no text, no letters. Reads as a stored charge or contained energy inside a structure. Optically balanced stroke width, works at favicon scale.</pre>
+        <button class="btn btn--sm copy">Copiar</button>
+        <p class="where">El más "de producto": el núcleo dorado se lee como el dato o la energía útil contenida dentro de la estructura — literal con la metáfora cera/miel del storytelling.</p>
+      </div>
+    </div>
+
+    <div class="prompt">
+      <div class="prompt-head">
+        <div><h4>Concepto 3 · Medición expuesta</h4><span class="sub">Del corte transversal: el hexágono abierto que muestra su propio grosor de pared</span>
+          <div class="prompt-meta"><span class="chip">1:1</span><span class="chip">2K</span><span class="chip chip--gold">exploración</span></div></div>
+      </div>
+      <div class="prompt-body">
+        <pre class="p">A minimalist vector-style logomark: a hexagon rendered as a thick outlined ring rather than a thin line, so the wall itself has visible measurable thickness, like a cross-section cut through a honeycomb cell wall. One flat side of the ring is left open with a small precise gap, as if sliced for inspection. Two colours only, deep forest green (#11231A) for the ring and muted antique gold (#B08A34) for a single thin tick mark bridging the gap like a caliper measurement. Flat design, solid white background, no gradients, no drop shadows, no text. Precise, technical, instrument-like. Works at favicon scale.</pre>
+        <button class="btn btn--sm copy">Copiar</button>
+        <p class="where">El más "analista": la marca de medición dentro del corte conecta directo con el calibrador del prompt 03 y con la promesa central del producto — cuantificar la pared que sobra.</p>
+      </div>
+    </div>
+
+    <div class="grid grid-3 mt5">
+      <div class="card"><h4 class="t-h4">Antes de decidir</h4><p class="sub mb0">Imprime los tres a 24px, 48px y 200px reales — no en pantalla a zoom. Un logo que solo funciona grande no sirve de favicon ni de marca de agua del reporte.</p></div>
+      <div class="card"><h4 class="t-h4">Al vectorizar en Figma</h4><p class="sub mb0">Redibuja sobre una retícula hexagonal de 24px como los íconos del sistema (ver sección de Íconos), para que el logo y el set de íconos compartan el mismo grosor de trazo y radio de esquina.</p></div>
+      <div class="card"><h4 class="t-h4">Cuando esté vectorizado</h4><p class="sub mb0">Reemplaza <span class="mono" style="font-size:11px">assets/logo.svg</span> y el <span class="mono" style="font-size:11px">&lt;svg&gt;</span> inline del <span class="mono" style="font-size:11px">.brand</span> en cada header. Ese cambio se propaga solo a todo el sitio.</p></div>
+    </div>
+  </section>
+
+  <!-- ══════ REGISTRO DE SLOTS ══════ -->
+  <section id="registro">
+    <div class="eyebrow">Mapa</div>
+    <h2 class="t-h2 mb3">Registro de slots gráficos</h2>
+    <p class="lead mb4">Cada hueco de arte del producto está declarado en el HTML con <span class="mono">data-slot</span> y un comentario <span class="mono">▨ SLOT</span>. Esta tabla es la fuente de verdad: el nombre del archivo, la proporción y el tamaño de exportación salen de aquí.</p>
+
+    <div class="note mb5"><p style="margin:0"><strong>Para activar cualquier slot:</strong> genera la imagen, guárdala como <span class="mono">assets/img/{id}.webp</span> (o <span class="mono">.png</span> si lleva transparencia), sustituye el bloque <span class="mono">.slot-ph</span> por <span class="mono">&lt;img src="assets/img/{id}.webp" alt=""&gt;</span> y borra el <span class="mono">&lt;span class="slot-id"&gt;</span>. El marco, la proporción y el recorte ya están resueltos por CSS.</p></div>
+
+    <div class="table-wrap mb5">
+      <table>
+        <thead><tr><th>ID del slot</th><th>Página · sección</th><th>Proporción</th><th>Export</th><th>Tipo</th></tr></thead>
+        <tbody>
+          <tr><td>dc-01-sala</td><td>index · El problema</td><td>4:5</td><td>1200×1500</td><td>Fotográfico</td></tr>
+          <tr><td>dc-02-pasillo</td><td>index · Referencia de PUE</td><td>16:9</td><td>1600×900</td><td>Fotográfico</td></tr>
+          <tr><td>emp-01-instalacion</td><td>empresa · Quiénes somos</td><td>21:9</td><td>2100×900</td><td>Fotográfico</td></tr>
+          <tr><td>met-01-sensor</td><td>empresa · Método 01</td><td>1:1</td><td>600×600</td><td>Recorte PNG</td></tr>
+          <tr><td>met-02-modelo</td><td>empresa · Método 02</td><td>1:1</td><td>600×600</td><td>Recorte PNG</td></tr>
+          <tr><td>met-03-reporte</td><td>empresa · Método 03</td><td>1:1</td><td>600×600</td><td>Recorte PNG</td></tr>
+          <tr><td>liq-01-coldplate</td><td>empresa · Enfriamiento líquido</td><td>16:9</td><td>1600×900</td><td>Fotográfico</td></tr>
+          <tr><td>liq-02-inmersion</td><td>empresa · Enfriamiento líquido</td><td>16:9</td><td>1600×900</td><td>Fotográfico</td></tr>
+          <tr><td>ins-01-liquido</td><td>empresa · Insights</td><td>16:7</td><td>1600×700</td><td>Editorial</td></tr>
+          <tr><td>panel-01-vacio</td><td>panel · Estado vacío de leads</td><td>1:1</td><td>600×600</td><td>Recorte PNG</td></tr>
+          <tr><td>login-01-fondo</td><td>login · Fondo</td><td>2:3</td><td>1200×1800</td><td>Fotográfico</td></tr>
+          <tr><td>pdf-01-portada</td><td>reporte · Portada</td><td>2:3</td><td>1240×1754</td><td>Abstracto</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="t-h4 mb3">Estado actual</h3>
+    <p class="lead mb4">Los doce slots de la tabla ya tienen su prompt correspondiente en la <a href="#biblioteca">biblioteca</a>, cada uno con la proporción exacta y el destino en el código. El orden recomendado para generar:</p>
+    <div class="card card--flat">
+      <ul class="lead" style="padding-left:20px;margin:0">
+        <li><strong>Primero el logo</strong> (sección <a href="#logo">Logo</a>). Define grosor de trazo y geometría, y todo lo demás lo hereda visualmente aunque no lo use directamente.</li>
+        <li><strong>Luego la imagen madre del hero</strong> (prompt 01), iterada hasta que sea exactamente la dirección — las demás se generan por referencia a esta.</li>
+        <li><strong>Después el resto</strong>, en cualquier orden, usando la imagen madre como referencia de estilo en cada prompt.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ══════ ELEMENTOS SUELTOS ══════ -->
+  <section id="sueltos">
+    <div class="eyebrow">Lo que pediste</div>
+    <h2 class="t-h2 mb4">Elementos sueltos con fondo transparente</h2>
+    <p class="lead mb4">Una imagen rectangular pegada sobre el fondo crema se ve como un parche. Lo que hace que un producto se sienta trabajado son piezas recortadas que se apoyan sobre el fondo: un fragmento de cera en la esquina de una tarjeta, un instrumento junto a un título, un panal que se sale del encuadre.</p>
+
+    <div class="note mb5"><p style="margin:0"><strong>Cómo se obtiene el recorte, en la práctica.</strong> No dependas de que el modelo entregue el canal alfa. El método que sale bien a la primera es generar el objeto <em>aislado sobre un fondo plano de un solo color</em> y quitar ese fondo después. Pide fondo blanco puro para objetos oscuros y negro puro para objetos claros: el contraste hace que el recorte sea limpio incluso en los bordes suaves.</p></div>
+
+    <div class="grid grid-3 mb5">
+      <div class="card"><h4 class="t-h4">1 · Genera aislado</h4><p class="sub mb0">Un solo objeto, centrado, con margen generoso alrededor y fondo plano de un color. Nada de superficie, nada de escritorio.</p></div>
+      <div class="card"><h4 class="t-h4">2 · Recorta</h4><p class="sub mb0">Quita el fondo y conserva la sombra propia del objeto, no la que caía sobre la mesa. Exporta PNG con alfa.</p></div>
+      <div class="card"><h4 class="t-h4">3 · Reintegra</h4><p class="sub mb0">Sobre el crema, añade en CSS una sombra suave y baja: <span class="mono" style="font-size:11px">filter: drop-shadow(0 14px 26px rgba(17,35,26,.16))</span>. Sin eso el objeto flota.</p></div>
+    </div>
+
+    <div class="prompt">
+      <div class="prompt-head">
+        <div><h4>Plantilla base para cualquier elemento suelto</h4><span class="sub">cambia solo el objeto</span>
+          <div class="prompt-meta"><span class="chip">1:1</span><span class="chip">2K</span><span class="chip chip--gold">plantilla</span></div></div>
+      </div>
+      <div class="prompt-body">
+        <pre class="p">A single [OBJETO], isolated at the centre of the frame on a completely flat pure white background, with generous empty margin on all sides. No surface, no table, no floor, no horizon — the object appears to float. Soft directional light from the upper left creating a gentle shadow attached to the object itself. Matte materials only. The background must be one uniform colour with no gradient, no vignette and no texture, so the object can be cut out cleanly.</pre>
+        <button class="btn btn--sm copy">Copiar plantilla</button>
+        <p class="where">Reemplaza <b>[OBJETO]</b> por la descripción de la lista de abajo, y añade el bloque de estilo y el de restricciones.</p>
+      </div>
+    </div>
+
+    <h3 class="t-h4 mt6 mb3">Los siete objetos del repertorio</h3>
+    <p class="lead mb4">Con estos siete cubres toda la landing y el panel. Cada uno tiene un lugar asignado para que no se usen al azar.</p>
+    <div class="card mb5">
+      <pre class="p">01  fragmento-panal   → broken piece of pale wax honeycomb, three or four cells,
+                        irregular torn edge on one side
+    dónde: esquina superior de la sección «El problema»
+
+02  bloque-cera       → rough block of raw beeswax with tool marks on its surface
+    dónde: tarjeta del paso 02, «Ves tu costo real»
+
+03  calibrador        → old brass caliper, half open, seen at a three quarter angle
+    dónde: tarjeta del paso 01, «Metes seis datos»
+
+04  marco-colmena     → empty wooden hive frame, front view, nothing built inside
+    dónde: estado vacío del panel interno
+
+05  reporte-objeto    → thin closed booklet with a deep green cover and a small
+                        gold blind-embossed geometric mark, no readable text
+    dónde: tarjeta del paso 04 y pantalla de entrega
+
+06  celda-solida      → single solid hexagon of unpolished brass, seen from above
+    dónde: viñetas, avatar, favicon grande
+
+07  panal-luz         → thin slab of honeycomb lit from behind so the wax glows
+                        warm and the cell walls read as dark lines
+    dónde: fondo del CTA final, al 20% de opacidad</pre>
+    </div>
+
+    <div class="prompt">
+      <div class="prompt-head">
+        <div><h4>Los siete de un solo golpe</h4><span class="sub">para que salgan como familia y no como piezas sueltas</span>
+          <div class="prompt-meta"><span class="chip">1:1</span><span class="chip">4K</span></div></div>
+      </div>
+      <div class="prompt-body">
+        <pre class="p">A 3x3 grid contact sheet of seven separate objects, each isolated in its own cell on a completely flat pure white background, evenly spaced, all photographed with the same lens, the same soft light from the upper left and the same scale of shadow. The objects are: a broken piece of pale wax honeycomb; a rough block of raw beeswax; an old brass caliper half open; an empty wooden hive frame; a thin closed booklet with a deep green cover; a solid hexagon of unpolished brass; a thin slab of honeycomb lit from behind. Two cells stay empty. Consistent style across all cells.</pre>
+        <button class="btn btn--sm copy">Copiar</button>
+        <p class="where">Generar la lámina completa y recortar celda por celda garantiza que los siete compartan luz y escala. Es más rápido y sale más parejo que pedirlos uno por uno.</p>
+      </div>
+    </div>
+
+    <h3 class="t-h4 mt6 mb3">Movimiento: qué se anima y qué no</h3>
+    <p class="lead mb4">Pediste motion en los íconos. La regla es que el movimiento sirva para explicar, no para adornar, porque este producto emite un juicio sobre el trabajo de alguien y la inquietud visual le resta autoridad.</p>
+    <div class="yesno">
+      <div class="card"><span class="chip chip--ok mb3">Sí se anima</span>
+        <ul>
+          <li><b>El ícono de enfriamiento</b> con un pulso lento de dos segundos, solo al entrar en pantalla.</li>
+          <li><b>Las barras de score</b>, creciendo desde cero cuando aparecen.</li>
+          <li><b>El radar</b>, escalando desde el centro una sola vez.</li>
+          <li><b>El barrido de brillo</b> de los botones, solo en hover.</li>
+        </ul>
+      </div>
+      <div class="card"><span class="chip chip--crit mb3">No se anima</span>
+        <ul>
+          <li><b>Nada en bucle infinito</b> fuera del hero.</li>
+          <li><b>El texto</b>: ni entradas escalonadas ni máquina de escribir.</li>
+          <li><b>Los íconos de la interfaz</b> del panel, que se leen cientos de veces al día.</li>
+          <li><b>Nada</b> si el sistema pide <span class="mono" style="font-size:11px">prefers-reduced-motion</span>.</li>
+        </ul>
+      </div>
+    </div>
+    <!-- 15 -->
+    <div class="prompt">
+      <div class="prompt-head">
+        <div><h4>15 · Instalación institucional <span class="mono" style="font-size:11px;color:var(--gold-700)">emp-01-instalacion</span></h4>
+          <span class="sub">empresa.html, cierre de «Quiénes somos»</span>
+          <div class="prompt-meta"><span class="chip">21:9</span><span class="chip">2K</span><span class="chip chip--gold">slot activo</span></div></div>
+      </div>
+      <div class="prompt-body">
+        <pre class="p">Wide panoramic photograph of a data centre facility exterior at dusk, low angle, the building a long low mass of dark concrete and glass. A few window bays glow warm amber against the deep green-black sky. No signage, no logos, no people, no vehicles. Extremely calm and empty, architectural, documentary photography.</pre>
+        <button class="btn btn--sm copy">Copiar</button>
+        <p class="where">Va en <b>empresa.html</b>, figure <b>artslot--cinema</b> al cierre de la sección «Quiénes somos». Es la única foto de exterior del sitio: transmite escala institucional antes de entrar al método.</p>
+      </div>
+    </div>
+
+    <!-- 16 -->
+    <div class="prompt">
+      <div class="prompt-head">
+        <div><h4>16 · Sensor <span class="mono" style="font-size:11px;color:var(--gold-700)">met-01-sensor</span></h4>
+          <span class="sub">empresa.html, paso 01 del método</span>
+          <div class="prompt-meta"><span class="chip">1:1</span><span class="chip">1K</span><span class="chip chip--gold">recorte PNG</span></div></div>
+      </div>
+      <div class="prompt-body">
+        <pre class="p">A single small brass sensor module with a short probe, isolated at the centre of the frame on a completely flat pure white background, generous margin on all sides, no surface, appears to float. Soft directional light from the upper left with a gentle attached shadow. Matte metal, a tiny amber indicator light. Background must be one uniform white with no gradient, for clean cutout.</pre>
+        <button class="btn btn--sm copy">Copiar</button>
+        <p class="where">Reemplaza el <b>.slot-ph</b> del primer <b>.mstep</b> en <b>empresa.html</b>. Es el mismo lenguaje que el calibrador del prompt 03, pero como objeto de medición electrónica en vez de manual.</p>
+      </div>
+    </div>
+
+    <!-- 17 -->
+    <div class="prompt">
+      <div class="prompt-head">
+        <div><h4>17 · El modelo <span class="mono" style="font-size:11px;color:var(--gold-700)">met-02-modelo</span></h4>
+          <span class="sub">empresa.html, paso 02 del método</span>
+          <div class="prompt-meta"><span class="chip">1:1</span><span class="chip">1K</span><span class="chip chip--gold">recorte PNG</span></div></div>
+      </div>
+      <div class="prompt-body">
+        <pre class="p">A single brass drafting compass, half open, standing upright, isolated at the centre of the frame on a completely flat pure white background, generous margin, appears to float. Soft light from the upper left, gentle attached shadow. Old, matte, precise instrument. Uniform white background with no gradient for clean cutout.</pre>
+        <button class="btn btn--sm copy">Copiar</button>
+        <p class="where">Reemplaza el <b>.slot-ph</b> del segundo <b>.mstep</b>. El compás representa cálculo y proyección — coherente con «un modelo predice dónde se fuga».</p>
+      </div>
+    </div>
+
+    <!-- 18 -->
+    <div class="prompt">
+      <div class="prompt-head">
+        <div><h4>18 · El reporte, objeto <span class="mono" style="font-size:11px;color:var(--gold-700)">met-03-reporte</span></h4>
+          <span class="sub">empresa.html, paso 03 del método</span>
+          <div class="prompt-meta"><span class="chip">1:1</span><span class="chip">1K</span><span class="chip chip--gold">recorte PNG</span></div></div>
+      </div>
+      <div class="prompt-body">
+        <pre class="p">A single thin closed booklet, standing slightly propped open at a small angle, isolated on a completely flat pure white background, generous margin, appears to float. The cover is deep forest green with a small gold geometric mark, no readable text. Soft light from the upper left, gentle attached shadow. Uniform white background for clean cutout.</pre>
+        <button class="btn btn--sm copy">Copiar</button>
+        <p class="where">Reemplaza el <b>.slot-ph</b> del tercer <b>.mstep</b>. Versión en miniatura y recortada del objeto completo del prompt 06 — mismo booklet, aquí aislado para uso como ícono grande.</p>
+      </div>
+    </div>
+
+    <!-- 19 -->
+    <div class="prompt">
+      <div class="prompt-head">
+        <div><h4>19 · Placa fría <span class="mono" style="font-size:11px;color:var(--gold-700)">liq-01-coldplate</span></h4>
+          <span class="sub">empresa.html, sección «Enfriamiento líquido»</span>
+          <div class="prompt-meta"><span class="chip">16:9</span><span class="chip">2K</span><span class="chip chip--gold">slot activo</span></div></div>
+      </div>
+      <div class="prompt-body">
+        <pre class="p">Extreme close-up macro photograph of a cold plate liquid cooling module mounted on a server processor, two braided tubes entering and exiting the fittings. Condensation-free, dry and clean. Warm amber light from the upper left, the rest of the circuit board falling into deep green shadow. Shallow depth of field, sharp focus on the fittings.</pre>
+        <button class="btn btn--sm copy">Copiar</button>
+        <p class="where">Va en <b>empresa.html</b>, primera <b>.liquid-card</b>. Foto real de hardware, no diagrama — refuerza que la sección habla de una disciplina física concreta.</p>
+      </div>
+    </div>
+
+    <!-- 20 -->
+    <div class="prompt">
+      <div class="prompt-head">
+        <div><h4>20 · Tanque de inmersión <span class="mono" style="font-size:11px;color:var(--gold-700)">liq-02-inmersion</span></h4>
+          <span class="sub">empresa.html, sección «Enfriamiento líquido»</span>
+          <div class="prompt-meta"><span class="chip">16:9</span><span class="chip">2K</span><span class="chip chip--gold">slot activo</span></div></div>
+      </div>
+      <div class="prompt-body">
+        <pre class="p">Photograph of an open immersion cooling tank from a slightly elevated angle, server blades submerged vertically in clear dielectric fluid, the fluid surface catching a thin warm reflection. Deep green ambient light, otherwise dark surroundings. No people. Calm, quiet, documentary style, shallow reflections on the fluid surface.</pre>
+        <button class="btn btn--sm copy">Copiar</button>
+        <p class="where">Va en <b>empresa.html</b>, segunda <b>.liquid-card</b>. Debe leerse claramente distinto de la placa fría: aquí el fluido es protagonista visual, no un detalle de tubería.</p>
+      </div>
+    </div>
+
+    <!-- 21 -->
+    <div class="prompt">
+      <div class="prompt-head">
+        <div><h4>21 · Editorial de insights <span class="mono" style="font-size:11px;color:var(--gold-700)">ins-01-liquido</span></h4>
+          <span class="sub">empresa.html, artículo ancla de Insights</span>
+          <div class="prompt-meta"><span class="chip">16:7</span><span class="chip">2K</span><span class="chip chip--gold">slot activo</span></div></div>
+      </div>
+      <div class="prompt-body">
+        <pre class="p">Wide editorial photograph, shallow depth of field: a single cold plate liquid cooling fitting in sharp focus in the foreground, the rest of a server rack blurred behind it in warm bokeh. Deep forest green and gold tones throughout, magazine feature style rather than product photography. Wide horizontal composition with the sharp subject placed left of centre.</pre>
+        <button class="btn btn--sm copy">Copiar</button>
+        <p class="where">Va en <b>empresa.html</b>, cabecera del artículo «Enfriamiento líquido: la tecnología del futuro...». Es la única imagen del sitio con estilo editorial de revista, deliberadamente distinta a las fotos de producto.</p>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ══════ ÍCONOS ══════ -->
+  <section id="iconos">
+    <div class="eyebrow">Vectores</div>
+    <h2 class="t-h2 mb3">Set de íconos de la marca</h2>
+    <p class="lead mb5">Todos sobre retícula de 24, trazo de 1.7, extremos redondeados, construidos con el hexágono como módulo. Esto no se genera: se dibuja. Están en línea en el HTML para que los copies directo a Figma.</p>
+    <div class="iconwall">
+      <div class="iconcell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 2l8.66 5v10L12 22l-8.66-5V7z"/></svg><span>celda</span></div>
+      <div class="iconcell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 2l8.66 5v10L12 22l-8.66-5V7z"/><path d="M12 7.6l4.3 2.5v4.8L12 17.4l-4.3-2.5v-4.8z"/></svg><span>capacidad</span></div>
+      <div class="iconcell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 2l8.66 5v10L12 22l-8.66-5V7z"/><path d="M12 2v20M3.34 7L12 12l8.66-5"/></svg><span>estructura</span></div>
+      <div class="iconcell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 2l8.66 5v10L12 22l-8.66-5V7z"/><path d="M8 13l2.5 2.5L16 10"/></svg><span>verificado</span></div>
+      <div class="iconcell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 2l8.66 5v10L12 22l-8.66-5V7z" stroke-dasharray="3 3"/><path d="M12 8v5M12 16h.01"/></svg><span>brecha</span></div>
+      <div class="iconcell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M4 20V9M10 20V4M16 20v-7M22 20H2"/></svg><span>score</span></div>
+      <div class="iconcell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 3l7.5 4.3v8.6L12 20.2 4.5 15.9V7.3z"/><path d="M12 20.2V12l7.5-4.3"/></svg><span>volumen</span></div>
+      <div class="iconcell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg><span>energía</span></div>
+      <div class="iconcell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l-1 7-5 4-5-4z"/><path d="M12 14v7M8 21h8"/></svg><span>enfriamiento</span></div>
+      <div class="iconcell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><rect x="3" y="4" width="18" height="6" rx="1.5"/><rect x="3" y="14" width="18" height="6" rx="1.5"/><path d="M7 7h.01M7 17h.01"/></svg><span>rack</span></div>
+      <div class="iconcell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h11l4 4v14H5z"/><path d="M16 3v4h4M9 12h6M9 16h6"/></svg><span>reporte</span></div>
+      <div class="iconcell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-8-8 18-2-7-8-3z"/></svg><span>campaña</span></div>
+    </div>
+
+    <h3 class="t-h4 mt6 mb3">Patrón de panal en CSS</h3>
+    <p class="lead mb4">El fondo de la landing y del login ya usa este patrón vectorial. Es más ligero que una imagen y escala sin pixelarse, así que solo lo sustituyes por textura generada si buscas un acabado más matérico.</p>
+    <div class="card"><pre class="p">&lt;pattern id="comb" width="56" height="97" patternUnits="userSpaceOnUse"&gt;
+  &lt;path d="M28 0 L56 16 L56 48 L28 64 L0 48 L0 16 Z"
+        fill="none" stroke="#D6B667" stroke-width=".5" opacity=".33"/&gt;
+  &lt;path d="M28 64 L56 80 L56 112 L28 128 L0 112 L0 80 Z"
+        fill="none" stroke="#D6B667" stroke-width=".5" opacity=".33"/&gt;
+&lt;/pattern&gt;</pre></div>
+  </section>
+
+  <!-- ══════ ENTREGA ══════ -->
+  <section id="entrega">
+    <div class="eyebrow">Cierre</div>
+    <h2 class="t-h2 mb4">De la imagen generada al repositorio</h2>
+
+    <div class="grid grid-2 mb5">
+      <div class="card"><h4 class="t-h4">Post-proceso mínimo</h4>
+        <p class="sub">Bajar saturación del dorado si salió estridente, subir el negro del verde para que empate con <span class="mono">#11231A</span>, exportar a WebP con calidad 78. Los fondos grandes casi nunca necesitan más de 250 KB.</p>
+        <p class="sub mb0">Nombre de archivo: <span class="mono">hero-fondo.webp</span>, <span class="mono">etapa-01-medir.webp</span>. Todo en <span class="mono">assets/img/</span>.</p></div>
+      <div class="card"><h4 class="t-h4">Accesibilidad</h4>
+        <p class="sub">Toda imagen decorativa lleva <span class="mono">alt=""</span> y <span class="mono">aria-hidden="true"</span>. Solo las que aportan información llevan alt descriptivo.</p>
+        <p class="sub mb0">Si una imagen va detrás de texto, el contraste se mide <strong>después</strong> de colocarla, no antes.</p></div>
+    </div>
+
+    <h3 class="t-h4 mb3">Lista de aceptación</h3>
+    <p class="lead mb4">Una imagen entra al producto solo si pasa las seis.</p>
+    <div class="card card--flat">
+      <ul class="lead" style="padding-left:20px;margin:0">
+        <li>¿Se puede explicar con la frase de la tesis?</li>
+        <li>¿Está dentro de la paleta, sin azules ni morados colados?</li>
+        <li>¿Toda superficie es mate?</li>
+        <li>¿Hay una sola dirección de luz?</li>
+        <li>¿Queda aire suficiente para que el texto respire encima?</li>
+        <li>¿Está libre de texto, logos, interfaces y personas?</li>
+      </ul>
+    </div>
+
+    <div class="note mt5"><p style="margin:0"><strong>Pendiente que no cubre este sistema:</strong> el logo definitivo. El hexágono actual ocupa el lugar correcto en todos los layouts pero es provisional, y es lo único de esta lista que conviene resolver a mano antes de generar una sola imagen — porque el logo define el grosor de trazo y la geometría que después heredan los íconos y las ilustraciones.</p></div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="brand">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 2l8.66 5v10L12 22l-8.66-5V7z"/><path d="M12 8.2l3.9 2.25v4.5L12 17.2l-3.9-2.25v-4.5z" opacity=".55"/></svg>
+        <span class="word">Combwork</span>
+      </div>
+      <p>Optimización energética para operadores de centros de datos. Medimos la capacidad que ya pagas y no rinde.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Producto</h4>
+      <a href="flujo.html">Calculadora</a>
+      <a href="flujo.html">Benchmark de madurez</a>
+      <a href="index.html#pasos">Reporte institucional</a>
+    </div>
+    <div class="footer-col">
+      <h4>Compañía</h4>
+      <a href="empresa.html">Quiénes somos</a>
+      <a href="empresa.html#metodo">Nuestra tecnología</a>
+      <a href="empresa.html#insights">Insights</a>
+    </div>
+    <div class="footer-col">
+      <h4>Recursos</h4>
+      <a href="empresa.html#metodologia">Metodología del modelo</a>
+      <a href="empresa.html#liquido">Enfriamiento líquido</a>
+      <a href="index.html#colmena">Por qué Combwork</a>
+    </div>
+  </div>
+  <div class="footer-base">
+    <span>© 2026 COMBWORK</span>
+    <span>LAS PROYECCIONES SON ESTIMACIONES, NO COMPROMISOS DE AHORRO</span>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  var toast=document.getElementById('toast');
+  function flash(m){toast.textContent=m;toast.classList.add('show');clearTimeout(toast._h);toast._h=setTimeout(function(){toast.classList.remove('show')},2200);}
+  document.querySelectorAll('.copy').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var pre = btn.parentElement.querySelector('pre.p');
+      if(!pre) return;
+      var txt = pre.textContent;
+      function done(){ btn.classList.add('ok'); var t=btn.textContent; btn.textContent='Copiado'; flash('Prompt copiado al portapapeles.');
+        setTimeout(function(){btn.textContent=t; btn.classList.remove('ok');},1600); }
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(txt).then(done).catch(function(){ fallback(txt, done); });
+      } else { fallback(txt, done); }
+    });
+  });
+  function fallback(txt, done){
+    var ta=document.createElement('textarea'); ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); done(); }catch(e){ flash('Selecciona el texto y cópialo a mano.'); }
+    document.body.removeChild(ta);
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#11231A">
+<meta name="robots" content="noindex, nofollow">
+<title>Combwork — Acceso</title>
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<main class="auth-shell">
+  <svg class="auth-bg" viewBox="0 0 1200 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs><pattern id="c2" width="56" height="97" patternUnits="userSpaceOnUse" patternTransform="scale(1.7)">
+      <path d="M28 0 L56 16 L56 48 L28 64 L0 48 L0 16 Z" fill="none" stroke="#D6B667" stroke-width=".5" opacity=".45"/>
+      <path d="M28 64 L56 80 L56 112 L28 128 L0 112 L0 80 Z" fill="none" stroke="#D6B667" stroke-width=".5" opacity=".45"/>
+    </pattern></defs>
+    <rect width="1200" height="900" fill="url(#c2)"/>
+  </svg>
+
+  <!-- ▨ SLOT · login-01-fondo · 2:3 · 1200×1800 · sustituye al <svg class="auth-bg"> -->
+  <div class="auth-box">
+    <a class="auth-mark" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 2l8.66 5v10L12 22l-8.66-5V7z"/><path d="M12 8.2l3.9 2.25v4.5L12 17.2l-3.9-2.25v-4.5z" opacity=".55"/></svg>
+      Combwork
+    </a>
+
+    <div class="card card--raised">
+      <h1 class="t-h3 mb2">Acceso</h1>
+      <p class="sub mb5">Esta sección es para el equipo interno.</p>
+
+      <div class="field-group">
+        <label class="lbl" for="user">Correo</label>
+        <input class="field" id="user" type="email" placeholder="tu@combwork.io" autocomplete="username" autocapitalize="off" spellcheck="false">
+      </div>
+      <div class="field-group">
+        <label class="lbl" for="pass">Contraseña</label>
+        <input class="field" id="pass" type="password" placeholder="••••••••" autocomplete="current-password">
+        <span class="field-error" id="err-auth">Correo o contraseña incorrectos.</span>
+      </div>
+      <label class="row mb4" style="gap:10px;cursor:pointer;align-items:center">
+        <input type="checkbox" id="remember" checked>
+        <span class="sub">Mantener la sesión abierta en este navegador</span>
+      </label>
+
+      <button class="btn btn--block" id="doLogin">Entrar</button>
+
+      <details class="mt4">
+        <summary class="sub" style="cursor:pointer;min-height:44px;display:flex;align-items:center">¿Problemas para entrar?</summary>
+        <p class="sub mt2 mb0">Escribe a soporte interno para restablecer tu acceso.<br><span class="mono" style="font-size:11.5px;opacity:.7">equipo@combwork.io · colmena</span></p>
+      </details>
+    </div>
+
+    <p class="auth-foot"><a href="index.html">← Volver al sitio</a></p>
+  </div>
+</main>
+
+<script>
+(function(){
+  var DEMO = { user:'equipo@combwork.io', pass:'colmena' };
+  var err = document.getElementById('err-auth');
+
+  function enter(){
+    var u = document.getElementById('user').value.trim().toLowerCase();
+    var p = document.getElementById('pass').value;
+    var ok = (u === DEMO.user && p === DEMO.pass);
+    err.classList.toggle('show', !ok);
+    document.getElementById('user').setAttribute('aria-invalid', ok?'false':'true');
+    document.getElementById('pass').setAttribute('aria-invalid', ok?'false':'true');
+    if(!ok) return;
+    var payload = JSON.stringify({ user:u, at:Date.now() });
+    try{
+      if(document.getElementById('remember').checked) localStorage.setItem('combwork.auth', payload);
+      else sessionStorage.setItem('combwork.auth', payload);
+    }catch(e){}
+    window.location.href = 'panel.html';
+  }
+
+  document.getElementById('doLogin').addEventListener('click', enter);
+  ['user','pass'].forEach(function(id){
+    document.getElementById(id).addEventListener('keydown', function(e){ if(e.key==='Enter') enter(); });
+  });
+})();
+</script>
+</body>
+</html>

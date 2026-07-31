@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#11231A">
+<title>Combwork — Design system v0.1</title>
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+  .sw{border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;background:var(--surface)}
+  .sw .chipcolor{height:64px}
+  .sw .meta{padding:9px 11px;font-family:var(--f-mono);font-size:10.5px;color:var(--ink-soft);line-height:1.5}
+  .sw .meta b{display:block;color:var(--forest-900);font-size:11px}
+  .specimen{border-bottom:1px solid var(--line-soft);padding:14px 0;display:flex;gap:18px;align-items:baseline;flex-wrap:wrap}
+  .specimen .tag{font-family:var(--f-mono);font-size:10.5px;color:var(--ink-faint);width:150px;flex-shrink:0}
+  .demo-box{border:1px dashed var(--line);border-radius:var(--r-md);padding:20px;background:var(--surface)}
+  .rulebox{display:grid;grid-template-columns:28px 1fr;gap:12px;padding:13px 0;border-bottom:1px solid var(--line-soft)}
+  .rulebox .id{font-family:var(--f-mono);font-size:11px;color:var(--gold-700)}
+  .rulebox p{margin:0;font-size:13.6px;color:var(--ink-soft)}
+  .rulebox strong{color:var(--forest-900)}
+</style>
+</head>
+<body class="app-shell">
+
+<header class="site-header">
+  <a class="brand" href="index.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 2l8.66 5v10L12 22l-8.66-5V7z"/><path d="M12 8.2l3.9 2.25v4.5L12 17.2l-3.9-2.25v-4.5z" opacity=".55"/></svg>
+    <span class="word">Combwork</span>
+  </a>
+  <span class="header-meta">Design system · v0.2</span>
+</header>
+
+<main class="wrap" style="padding-top:44px;padding-bottom:80px;max-width:960px">
+
+  <div class="eyebrow">Bases</div>
+  <h1 class="t-h2 mb3">Design system de Combwork</h1>
+  <p class="lead mb6">Un solo archivo de tokens (<span class="mono">assets/styles.css</span>) alimenta la landing, el flujo del operador, el panel interno y el reporte. Esta página es el espejo para armar las variables y componentes en Figma con los mismos nombres.</p>
+
+  <!-- COLOR -->
+  <section class="mb6">
+    <h2 class="t-h3 mb3">1 · Color</h2>
+    <p class="lead mb4">Forest sostiene superficies y texto. Gold es acento y aparece solo en dos momentos del flujo: el punto de decisión y el entregable. Nunca como fondo de gran superficie, porque el benchmark emite un juicio sobre el trabajo de quien responde.</p>
+    <div class="swatches mb5">
+      <div class="sw"><div class="chipcolor" style="background:#11231A"></div><div class="meta"><b>forest-900</b>#11231A · fondos oscuros, texto de títulos</div></div>
+      <div class="sw"><div class="chipcolor" style="background:#1D3A29"></div><div class="meta"><b>forest-700</b>#1D3A29 · texto secundario sobre claro</div></div>
+      <div class="sw"><div class="chipcolor" style="background:#2C5B3E"></div><div class="meta"><b>forest-500</b>#2C5B3E · estados activos, barras positivas</div></div>
+      <div class="sw"><div class="chipcolor" style="background:#4F7C5C"></div><div class="meta"><b>forest-300</b>#4F7C5C · líneas sobre oscuro</div></div>
+      <div class="sw"><div class="chipcolor" style="background:#8A6820"></div><div class="meta"><b>gold-700</b>#8A6820 · etiquetas mono, eyebrows</div></div>
+      <div class="sw"><div class="chipcolor" style="background:#B08A34"></div><div class="meta"><b>gold-500</b>#B08A34 · CTA de decisión y entregable</div></div>
+      <div class="sw"><div class="chipcolor" style="background:#D6B667"></div><div class="meta"><b>gold-300</b>#D6B667 · acento sobre oscuro</div></div>
+      <div class="sw"><div class="chipcolor" style="background:#F4E7C6"></div><div class="meta"><b>gold-100</b>#F4E7C6 · fondo del bloque de gate</div></div>
+      <div class="sw"><div class="chipcolor" style="background:#F7F4EA"></div><div class="meta"><b>paper</b>#F7F4EA · fondo de todo el producto</div></div>
+      <div class="sw"><div class="chipcolor" style="background:#EFE9D8"></div><div class="meta"><b>paper-warm</b>#EFE9D8 · tarjetas planas, KPIs</div></div>
+      <div class="sw"><div class="chipcolor" style="background:#98302B"></div><div class="meta"><b>crit</b>#98302B · error y brecha grande</div></div>
+      <div class="sw"><div class="chipcolor" style="background:#DBD2B7"></div><div class="meta"><b>line</b>#DBD2B7 · bordes y separadores</div></div>
+    </div>
+    <div class="note mb5"><p style="margin:0"><strong>Regla de severidad.</strong> En cualquier gráfico de score: rojo si está más de 0.6 debajo del promedio de industria, gold si está debajo, forest si está igual o arriba. El mismo criterio aplica en el flujo, el panel y el PDF.</p></div>
+
+    <h3 class="t-h4 mb3">Contraste medido</h3>
+    <p class="lead mb4">Estas combinaciones están verificadas contra WCAG 2.1 AA, que pide 4.5:1 para texto normal. Dos fallaban en la primera versión y se corrigieron.</p>
+    <div class="table-wrap mb5">
+      <table>
+        <thead><tr><th>Combinación</th><th>Ratio</th><th>Estado</th></tr></thead>
+        <tbody>
+          <tr><td>Botón dorado <span class="mono">#D6B667</span> + texto <span class="mono">#11231A</span></td><td>8.40:1</td><td><span class="chip chip--ok">AAA</span></td></tr>
+          <tr><td>Botón primario <span class="mono">#11231A</span> + texto <span class="mono">#F3EFE1</span></td><td>14.26:1</td><td><span class="chip chip--ok">AAA</span></td></tr>
+          <tr><td>Texto de apoyo <span class="mono">#667062</span> sobre paper</td><td>4.70:1</td><td><span class="chip chip--ok">AA</span></td></tr>
+          <tr><td class="sub" style="text-decoration:line-through">Texto de apoyo <span class="mono">#8B9486</span> sobre paper</td><td>2.86:1</td><td><span class="chip chip--crit">corregido</span></td></tr>
+          <tr><td class="sub" style="text-decoration:line-through">Pasos del hero al 42% de opacidad</td><td>3.69:1</td><td><span class="chip chip--crit">corregido</span></td></tr>
+          <tr><td>Etiquetas mono <span class="mono">#8A6820</span> sobre blanco</td><td>5.14:1</td><td><span class="chip chip--ok">AA</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </section>
+
+  <!-- TIPOGRAFÍA -->
+  <section class="mb6">
+    <h2 class="t-h3 mb3">2 · Tipografía</h2>
+    <p class="lead mb4">Source Serif 4 para todo lo que se lee como institución. IBM Plex Sans para lo que se opera. IBM Plex Mono para etiquetas, datos y metadatos.</p>
+    <div class="demo-box">
+      <div class="specimen"><span class="tag">.t-hero · Serif 400</span><span class="t-hero" style="font-size:44px">La capacidad que pagas</span></div>
+      <div class="specimen"><span class="tag">.t-h2 · Serif 400</span><span class="t-h2">Tu posición frente a la industria</span></div>
+      <div class="specimen"><span class="tag">.t-h3 · Serif 600</span><span class="t-h3">Score por dimensión</span></div>
+      <div class="specimen"><span class="tag">body · Plex Sans 400 · 15/1.6</span><span>Los resultados se actualizan mientras escribes.</span></div>
+      <div class="specimen"><span class="tag">.lead · Plex Sans · 16.5</span><span class="lead" style="margin:0">Seis datos de tu operación bastan para el primer número.</span></div>
+      <div class="specimen"><span class="tag">.lbl · Plex Mono · 10.5</span><span class="lbl" style="margin:0">CARGA DE TI (MW)</span></div>
+      <div class="specimen" style="border:none"><span class="tag">.sub · Plex Sans · 12.5</span><span class="sub">Texto de apoyo y microcopy.</span></div>
+    </div>
+  </section>
+
+  <!-- COMPONENTES -->
+  <section class="mb6">
+    <h2 class="t-h3 mb3">3 · Componentes</h2>
+
+    <h3 class="t-h4 mb3">Botones</h3>
+    <div class="demo-box mb5">
+      <div class="row" style="flex-wrap:wrap">
+        <button class="btn">Primario · forest</button>
+        <button class="btn btn--gold">Decisión · gold</button>
+        <button class="btn btn--ghost">Secundario</button>
+        <button class="btn btn--sm">Pequeño</button>
+        <button class="btn" disabled>Deshabilitado</button>
+      </div>
+      <p class="sub mt4 mb0">Todos llevan un barrido de brillo en hover y altura mínima de 44 px para uso táctil. El gold aparece dos veces por recorrido, no más.</p>
+    </div>
+
+    <h3 class="t-h4 mb3">Campos</h3>
+    <div class="demo-box mb5">
+      <div class="grid grid-2">
+        <div class="field-group"><label class="lbl">Estado normal</label><input class="field" placeholder="ej. 4.2"><span class="field-hint">El hint declara el rango válido</span></div>
+        <div class="field-group"><label class="lbl">Estado de error</label><input class="field" value="1485" aria-invalid="true"><span class="field-error show">Una tasa de conversión no puede superar 100%. Escribe un valor entre 0 y 100.</span></div>
+      </div>
+    </div>
+
+    <h3 class="t-h4 mb3">Escala de 5 puntos</h3>
+    <div class="demo-box mb5" style="max-width:420px">
+      <div class="likert-scale"><span>Nunca</span><span>Siempre</span></div>
+      <div class="likert">
+        <label class="likert-opt"><span class="dot"></span><span class="txt">Nunca lo hemos medido</span></label>
+        <label class="likert-opt sel"><span class="dot"></span><span class="txt">Cada trimestre</span></label>
+        <label class="likert-opt"><span class="dot"></span><span class="txt">Medición continua</span></label>
+      </div>
+      <p class="sub mb0">Sin preselección: el estado «sin responder» tiene que verse distinto del estado «respondido».</p>
+    </div>
+
+    <h3 class="t-h4 mb3">Chips y estados</h3>
+    <div class="demo-box mb5">
+      <div class="row" style="flex-wrap:wrap">
+        <span class="chip">neutro</span><span class="chip chip--gold">percentil 62</span>
+        <span class="chip chip--ok">Alto</span><span class="chip chip--warn">Medio</span>
+        <span class="chip chip--crit">Bajo</span><span class="chip chip--dark">activa</span>
+      </div>
+    </div>
+
+    <h3 class="t-h4 mb3">Tarjetas</h3>
+    <div class="grid grid-3 mb5">
+      <div class="card"><h4 class="t-h4">.card</h4><p class="sub mb0">Superficie blanca con borde. Contenedor por defecto.</p></div>
+      <div class="card card--raised"><h4 class="t-h4">.card--raised</h4><p class="sub mb0">Con sombra. Para lo que flota sobre el fondo.</p></div>
+      <div class="card card--flat"><h4 class="t-h4">.card--flat</h4><p class="sub mb0">Fondo cálido sin borde. Para datos agrupados.</p></div>
+    </div>
+  </section>
+
+  <!-- REGLAS -->
+  <section class="mb6">
+    <h2 class="t-h3 mb3">4 · Reglas que vienen del teardown</h2>
+    <p class="lead mb4">Cada una nace de un hallazgo en Pointerpro, HubSpot o Schneider. Están implementadas en el producto y son criterio de aceptación para cualquier pantalla nueva.</p>
+    <div class="rulebox"><span class="id">R-01</span><p><strong>Todo campo numérico con rango conocido lleva límites duros.</strong> PUE entre 1.00 y 5.00, precio entre 0.01 y 1.00, crecimiento entre 0 y 100. El error dice el rango, no solo que hay error, y bloquea la generación del reporte.</p></div>
+    <div class="rulebox"><span class="id">R-02</span><p><strong>Ningún valor por defecto puede parecer una respuesta del usuario.</strong> La escala del benchmark arranca vacía. Si algún control lleva valor inicial, ese valor es un dato real del sistema y está etiquetado como tal.</p></div>
+    <div class="rulebox"><span class="id">R-03</span><p><strong>El muro de correo se pone sobre el reporte, nunca sobre el resultado.</strong> El costo anual, el ahorro y el PUE comparado se ven sin entregar datos. «Salir sin continuar» tiene el mismo peso visual que «Continuar».</p></div>
+    <div class="rulebox"><span class="id">R-04</span><p><strong>Todo número va con su interpretación.</strong> Ningún score aparece solo: siempre con el promedio de industria al lado y una frase en lenguaje llano.</p></div>
+    <div class="rulebox"><span class="id">R-05</span><p><strong>El texto por dimensión del reporte es específico.</strong> Hallazgo y recomendación cambian según el rango de score de esa dimensión, no es un párrafo reciclado.</p></div>
+    <div class="rulebox"><span class="id">R-06</span><p><strong>El reporte incluye trazabilidad y aviso de no-garantía.</strong> Fecha, origen, datos ingresados reproducidos y la aclaración de que las proyecciones son estimaciones.</p></div>
+    <div class="rulebox"><span class="id">R-07</span><p><strong>Flujo, panel y reporte comparten el mismo sistema.</strong> Misma paleta, misma escala tipográfica, mismo lenguaje de gráficos. La consistencia es el mecanismo de credibilidad.</p></div>
+    <div class="rulebox"><span class="id">R-08</span><p><strong>La paleta acompaña el peso del contenido.</strong> Gold reservado a acentos. Nada de fondos saturados detrás de un juicio sobre la operación de alguien.</p></div>
+    <div class="rulebox" style="border:none"><span class="id">R-12</span><p><strong>Contraste plano y foco visible.</strong> Sin degradados detrás de texto, foco de teclado en gold a 2.5 px y marcado semántico en todos los formularios.</p></div>
+  </section>
+
+  <div class="note mb6"><p style="margin:0"><strong>El sistema gráfico vive aparte.</strong> Paleta, tipografía y componentes están en esta página; la dirección de imagen, la historia de marca y la biblioteca de prompts para generar recursos están en <a href="marca.html">sistema gráfico de marca</a>.</p></div>
+
+  <section>
+    <h2 class="t-h3 mb3">5 · Pendientes de esta versión</h2>
+    <ul class="lead" style="padding-left:20px">
+      <li>Logo definitivo: el hexágono actual es provisional, hecho para ocupar el lugar correcto en el layout.</li>
+      <li>Animación larga del hero: hoy son cuatro escenas en loop; la referencia que queremos alcanzar dura unos 30 segundos.</li>
+      <li>Modo oscuro del panel interno, si el equipo lo usa de noche.</li>
+      <li>Tokens exportados a Figma Variables con estos mismos nombres, para que el traslado sea uno a uno.</li>
+    </ul>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="brand">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 2l8.66 5v10L12 22l-8.66-5V7z"/><path d="M12 8.2l3.9 2.25v4.5L12 17.2l-3.9-2.25v-4.5z" opacity=".55"/></svg>
+        <span class="word">Combwork</span>
+      </div>
+      <p>Optimización energética para operadores de centros de datos. Medimos la capacidad que ya pagas y no rinde.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Producto</h4>
+      <a href="flujo.html">Calculadora</a>
+      <a href="flujo.html">Benchmark de madurez</a>
+      <a href="index.html#pasos">Reporte institucional</a>
+    </div>
+    <div class="footer-col">
+      <h4>Compañía</h4>
+      <a href="empresa.html">Quiénes somos</a>
+      <a href="empresa.html#metodo">Nuestra tecnología</a>
+      <a href="empresa.html#insights">Insights</a>
+    </div>
+    <div class="footer-col">
+      <h4>Recursos</h4>
+      <a href="empresa.html#metodologia">Metodología del modelo</a>
+      <a href="empresa.html#liquido">Enfriamiento líquido</a>
+      <a href="index.html#colmena">Por qué Combwork</a>
+    </div>
+  </div>
+  <div class="footer-base">
+    <span>© 2026 COMBWORK</span>
+    <span>LAS PROYECCIONES SON ESTIMACIONES, NO COMPROMISOS DE AHORRO</span>
+  </div>
+</footer>
+</body>
+</html>

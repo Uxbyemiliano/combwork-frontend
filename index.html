@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#11231A">
+<title>Combwork — La capacidad que pagas no siempre produce</title>
+<meta name="description" content="Calcula en 2 minutos el costo real de la ineficiencia energética de tu data center y compárate contra la industria.">
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<script src="assets/widgets.js" defer></script>
+</head>
+<body class="app-shell">
+
+<header class="site-header on-dark" id="siteHeader">
+  <a class="brand" href="index.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 2l8.66 5v10L12 22l-8.66-5V7z"/><path d="M12 8.2l3.9 2.25v4.5L12 17.2l-3.9-2.25v-4.5z" opacity=".55"/></svg>
+    <span class="word">Combwork</span>
+  </a>
+  <nav class="header-nav">
+    <a href="#pasos" class="hide-sm" style="color:rgba(246,243,234,.78)">Cómo funciona</a>
+    <a href="empresa.html" class="hide-sm" style="color:rgba(246,243,234,.78)">Quiénes somos</a>
+    <a href="empresa.html#insights" class="hide-sm" style="color:rgba(246,243,234,.78)">Insights</a>
+    <a class="btn btn--gold btn--sm header-cta" id="headerCta" href="flujo.html">Calcular ahora</a>
+  </nav>
+</header>
+
+<main>
+<!-- ══════════════ HERO ══════════════ -->
+<section class="hero">
+  <svg class="hero-comb" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs>
+      <pattern id="comb" width="56" height="97" patternUnits="userSpaceOnUse" patternTransform="scale(1.6)">
+        <path d="M28 0 L56 16 L56 48 L28 64 L0 48 L0 16 Z" fill="none" stroke="#F5BC3E" stroke-width=".6" opacity=".34"/>
+        <path d="M28 64 L56 80 L56 112 L28 128 L0 112 L0 80 Z" fill="none" stroke="#F5BC3E" stroke-width=".6" opacity=".34"/>
+      </pattern>
+    </defs>
+    <rect width="1200" height="800" fill="url(#comb)"/>
+  </svg>
+
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="eyebrow on-dark reveal">Benchmark de eficiencia energética</div>
+      <h1 class="t-hero reveal">37% de la energía <em>se va antes de llegar al servidor.</em></h1>
+      <p class="lead reveal">Ese es el promedio de la industria. En tu operación puede ser más o puede ser menos, y la única forma de saberlo es medirlo. Dos minutos y te llevas el reporte completo.</p>
+      <div class="hero-ctas reveal">
+        <a class="btn btn--gold btn--lg" href="flujo.html">Calcular mi costo real</a>
+        <span class="cta-meta">Sin registro · Resultado inmediato · 2 minutos</span>
+      </div>
+      <p class="hero-source reveal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+        PUE promedio de 1.58 · Uptime Institute, Global Data Center Survey
+      </p>
+    </div>
+
+    <div class="hero-viz reveal">
+      <div id="pueGapSlot"></div>
+      <a class="hero-viz-foot" href="#pasos">
+        <span>Tu reporte te ubica exactamente en esta escala</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ LOS CUATRO PASOS ══════════════ -->
+<section class="section" id="pasos">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Cómo funciona</div>
+      <h2 class="t-h2">Cuatro pasos, dos minutos, un documento que te puedes llevar.</h2>
+    </div>
+
+    <div class="steps4">
+      <article class="step-card">
+        <div class="step-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2.5" width="16" height="19" rx="2.5"/><path d="M8 7h8M8 12h3M8 16h3M15 12v5M13.5 14.5h3"/></svg></div>
+        <span class="n">PASO 01</span>
+        <h3>Metes seis datos</h3>
+        <p>Carga de TI, PUE, precio del kWh, tier, enfriamiento y crecimiento. El resultado se calcula mientras escribes.</p>
+        <span class="chip tag">Sin registro</span>
+      </article>
+
+      <article class="step-card">
+        <div class="step-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8.66 5v10L12 22l-8.66-5V7z"/><path d="M12 7.6l4.3 2.5v4.8L12 17.4l-4.3-2.5v-4.8z"/></svg></div>
+        <span class="n">PASO 02</span>
+        <h3>Ves tu costo real</h3>
+        <p>Cuánto pagas al año y qué parte de eso se va en enfriar, respaldar y distribuir en vez de producir.</p>
+        <span class="chip tag">Resultado inmediato</span>
+      </article>
+
+      <article class="step-card">
+        <div class="step-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V9M10 20V4M16 20v-7M22 20H2"/></svg></div>
+        <span class="n">PASO 03</span>
+        <h3>Te comparas</h3>
+        <p>Siete preguntas te ubican por dimensión frente a operadores de tu tamaño: eficiencia, enfriamiento, redundancia y cuatro más.</p>
+        <span class="chip tag">7 dimensiones</span>
+      </article>
+
+      <article class="step-card">
+        <div class="step-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h11l4 4v14H5z"/><path d="M16 3v4h4M9 12h6M9 16h4"/></svg></div>
+        <span class="n">PASO 04</span>
+        <h3>Te llevas el reporte</h3>
+        <p>Un PDF institucional de 8 páginas con tu posición, tus KPIs y un roadmap priorizado, listo para circular con tu equipo.</p>
+        <span class="chip tag">Descarga inmediata</span>
+      </article>
+    </div>
+
+    <div class="tac mt6">
+      <a class="btn btn--gold" href="flujo.html">Empezar por el paso 01</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ EL PROBLEMA ══════════════ -->
+<section class="section section--warm" id="problema">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">El problema</div>
+      <h2 class="t-h2">Dos capas que deberían coordinarse, y casi nunca lo hacen.</h2>
+      <p class="lead mt3">La potencia entra completa y sale a medias. No porque falte equipo, sino porque las decisiones de facility y las de TI se toman en juntas distintas.</p>
+    </div>
+
+    <div class="problem-layout">
+      <!-- SLOT DE ARTE · al generar la imagen, sustituir el bloque .ph por
+           <img src="assets/img/dc-01-sala.webp" alt=""> y borrar el <span class="tagname"> -->
+      <!-- ▨ SLOT · dc-01-sala · 4:5 · 1200×1500 -->
+      <figure class="artslot artslot--tall" data-slot="dc-01-sala">
+        <div class="slot-ph">
+          <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <defs>
+              <linearGradient id="dcg" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#1B4231"/><stop offset="1" stop-color="#0B1712"/>
+              </linearGradient>
+              <linearGradient id="beam" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#D6B667" stop-opacity="0"/>
+                <stop offset=".5" stop-color="#D6B667" stop-opacity=".3"/>
+                <stop offset="1" stop-color="#D6B667" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <rect width="400" height="500" fill="url(#dcg)"/>
+            <rect x="150" y="0" width="90" height="500" fill="url(#beam)"/>
+            <g stroke="#4F7C5C" stroke-opacity=".55" fill="none">
+              <path d="M60 120 h280 M60 190 h280 M60 260 h280 M60 330 h280"/>
+              <path d="M60 90 v300 M130 90 v300 M200 90 v300 M270 90 v300 M340 90 v300"/>
+            </g>
+            <g fill="#D6B667">
+              <rect x="66" y="128" width="16" height="4" rx="2" opacity=".85"/>
+              <rect x="136" y="198" width="16" height="4" rx="2" opacity=".6"/>
+              <rect x="206" y="128" width="16" height="4" rx="2" opacity=".9"/>
+              <rect x="276" y="268" width="16" height="4" rx="2" opacity=".5"/>
+              <rect x="206" y="338" width="16" height="4" rx="2" opacity=".75"/>
+            </g>
+            <rect width="400" height="500" fill="#11231A" opacity=".22"/>
+          </svg>
+        </div>
+        <span class="slot-id">slot · dc-01-sala · 4:5</span>
+      </figure>
+
+      <div class="problem-list">
+        <div class="problem-item"><div class="ix">01</div><div>
+          <h3>Capacidad fantasma</h3>
+          <p>Energía y espacio reservados que nunca se activan de verdad para carga productiva. Se paga completa, se usa a medias.</p></div></div>
+        <div class="problem-item"><div class="ix">02</div><div>
+          <h3>Sin visibilidad en tiempo real</h3>
+          <p>La mayoría de los operadores mide su eficiencia una vez al año, cuando ya es tarde para corregir el rumbo del trimestre.</p></div></div>
+        <div class="problem-item"><div class="ix">03</div><div>
+          <h3>Decisiones desconectadas</h3>
+          <p>Enfriamiento, redundancia y planeación de capacidad se deciden por separado, sin un panorama compartido entre facility y TI.</p></div></div>
+        <div class="problem-item"><div class="ix">04</div><div>
+          <h3>Sin punto de comparación</h3>
+          <p>Sin un benchmark real de industria es imposible saber si tu operación va adelante o va atrás de quienes compiten por la misma carga.</p></div></div>
+        <a class="btn-link mt4" href="empresa.html#liquido">Dónde termina el aire y empieza el enfriamiento líquido
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ LA COLMENA ══════════════ -->
+<section class="section" id="colmena">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">De dónde viene el nombre</div>
+      <h2 class="t-h2">La primera solución a este problema tiene cien millones de años.</h2>
+    </div>
+
+    <div class="comb-layout">
+      <div>
+        <p class="lead mb4">Para una abeja la cera es cara. Se estima que producir un kilo cuesta varios kilos de miel, es decir, energía. Así que el problema que resolvió la evolución fue exactamente este: <strong>cuánta capacidad útil obtienes por cada unidad de energía que gastas en la estructura que la contiene.</strong></p>
+        <p class="lead mb4">La respuesta es el hexágono. En 1999 Thomas Hales demostró formalmente lo que se sospechaba desde la antigüedad: de todas las formas de dividir una superficie en celdas del mismo tamaño, la retícula hexagonal es la que usa menos perímetro total. Menos pared, misma capacidad.</p>
+        <p class="lead mb0">Un data center tiene el mismo problema con otro vocabulario. La potencia que se va en enfriar, respaldar y distribuir es la cera. La carga de TI que efectivamente produce es la miel. <strong>Combwork mide esa relación y te dice cuánta pared de más estás construyendo.</strong></p>
+      </div>
+
+      <figure class="comb-fig">
+        <svg viewBox="0 0 300 330" fill="none" role="img" aria-label="Comparación de perímetro necesario para encerrar la misma área con círculos, cuadrados y hexágonos">
+          <g font-family="IBM Plex Mono" font-size="9.5" fill="#8A6820" letter-spacing="1">
+            <text x="0" y="12">MISMA ÁREA · DISTINTO PERÍMETRO</text>
+          </g>
+          <g transform="translate(6,34)">
+            <circle cx="26" cy="26" r="25" fill="none" stroke="#8A9285" stroke-width="1.6"/>
+            <circle cx="76" cy="26" r="25" fill="none" stroke="#8A9285" stroke-width="1.6"/>
+            <circle cx="51" cy="69" r="25" fill="none" stroke="#8A9285" stroke-width="1.6"/>
+            <text x="118" y="22" font-family="IBM Plex Sans" font-size="12" font-weight="600" fill="#19211A">Círculo</text>
+            <text x="118" y="40" font-family="IBM Plex Sans" font-size="11" fill="#515E4F">El perímetro mínimo,</text>
+            <text x="118" y="55" font-family="IBM Plex Sans" font-size="11" fill="#515E4F">pero deja huecos sin usar.</text>
+            <text x="118" y="76" font-family="IBM Plex Mono" font-size="10" fill="#98302B">capacidad desperdiciada</text>
+          </g>
+          <g transform="translate(6,142)">
+            <rect x="4" y="4" width="44" height="44" fill="none" stroke="#B08A34" stroke-width="1.6"/>
+            <rect x="48" y="4" width="44" height="44" fill="none" stroke="#B08A34" stroke-width="1.6"/>
+            <rect x="26" y="48" width="44" height="44" fill="none" stroke="#B08A34" stroke-width="1.6"/>
+            <text x="118" y="22" font-family="IBM Plex Sans" font-size="12" font-weight="600" fill="#19211A">Cuadrado</text>
+            <text x="118" y="40" font-family="IBM Plex Sans" font-size="11" fill="#515E4F">Tesela sin huecos, pero</text>
+            <text x="118" y="55" font-family="IBM Plex Sans" font-size="11" fill="#515E4F">gasta más pared por celda.</text>
+            <text x="118" y="76" font-family="IBM Plex Mono" font-size="10" fill="#8A6820">~7% más perímetro</text>
+          </g>
+          <g transform="translate(6,250)">
+            <path d="M26 2 L48 15 L48 41 L26 54 L4 41 L4 15 Z" fill="#F4E7C6" stroke="#2C5B3E" stroke-width="1.8"/>
+            <path d="M70 2 L92 15 L92 41 L70 54 L48 41 L48 15 Z" fill="#F4E7C6" stroke="#2C5B3E" stroke-width="1.8"/>
+            <path d="M48 41 L70 54 L70 80 L48 93 L26 80 L26 54 Z" fill="#F4E7C6" stroke="#2C5B3E" stroke-width="1.8"/>
+            <text x="118" y="22" font-family="IBM Plex Sans" font-size="12" font-weight="600" fill="#19211A">Hexágono</text>
+            <text x="118" y="40" font-family="IBM Plex Sans" font-size="11" fill="#515E4F">Tesela sin huecos y con el</text>
+            <text x="118" y="55" font-family="IBM Plex Sans" font-size="11" fill="#515E4F">perímetro más corto posible.</text>
+            <text x="118" y="76" font-family="IBM Plex Mono" font-size="10" fill="#2C5B3E">el óptimo demostrado</text>
+          </g>
+        </svg>
+        <figcaption class="sub mt3">Teorema del panal, demostrado por Thomas Hales en 1999.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ PROOF ══════════════ -->
+<section class="section section--warm">
+  <div class="wrap proof-grid">
+    <div>
+      <p class="quote">El data center promedio opera con un <span class="hi">PUE de 1.58</span>, muy lejos del 1.2–1.3 de las instalaciones más eficientes del mundo.</p>
+      <p class="sub mt4 mb0">Referencia: Uptime Institute, Global Data Center Survey.</p>
+
+      <!-- SLOT DE ARTE · sustituir por <img src="assets/img/dc-02-pasillo.webp" alt=""> -->
+      <!-- ▨ SLOT · dc-02-pasillo · 16:9 · 1600×900 -->
+      <figure class="artslot artslot--wide mt5" data-slot="dc-02-pasillo">
+        <div class="slot-ph">
+          <svg viewBox="0 0 640 360" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <defs><linearGradient id="aisle" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#173B2B"/><stop offset="1" stop-color="#0B1712"/></linearGradient></defs>
+            <rect width="640" height="360" fill="url(#aisle)"/>
+            <path d="M0 60 L250 150 L250 250 L0 330 Z" fill="#11231A" opacity=".7"/>
+            <path d="M640 60 L390 150 L390 250 L640 330 Z" fill="#11231A" opacity=".7"/>
+            <path d="M250 150 L390 150 L390 250 L250 250 Z" fill="#D6B667" opacity=".12"/>
+            <g stroke="#4F7C5C" stroke-opacity=".5" fill="none">
+              <path d="M0 60 L250 150 M0 120 L250 178 M0 180 L250 205 M0 330 L250 250 M0 270 L250 224"/>
+              <path d="M640 60 L390 150 M640 120 L390 178 M640 180 L390 205 M640 330 L390 250 M640 270 L390 224"/>
+            </g>
+            <g fill="#D6B667" opacity=".8">
+              <rect x="60" y="132" width="12" height="3" rx="1.5"/><rect x="120" y="152" width="12" height="3" rx="1.5"/>
+              <rect x="520" y="152" width="12" height="3" rx="1.5"/><rect x="580" y="132" width="12" height="3" rx="1.5"/>
+            </g>
+            <ellipse cx="320" cy="200" rx="120" ry="70" fill="#D6B667" opacity=".07"/>
+          </svg>
+        </div>
+        <span class="slot-id">slot · dc-02-pasillo · 16:9</span>
+      </figure>
+    </div>
+
+    <div class="card card--raised">
+      <div class="gauge-row"><span class="sub">Tu PUE estimado</span><span class="v" id="proofPue">—</span></div>
+      <div class="gauge-row"><span class="sub">Promedio de industria</span><span class="v">1.58</span></div>
+      <div class="gauge-row"><span class="sub">Mejores prácticas</span><span class="v">1.20–1.30</span></div>
+      <div class="gauge-row"><span class="sub">Tu posición</span><span class="v" style="color:var(--gold-700)" id="proofPos">Por definir</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ CTA FINAL ══════════════ -->
+<section class="section section--dark cta-final" id="final">
+  <div class="cta-mesh" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="eyebrow on-dark">Empieza aquí</div>
+    <h2 class="t-h2">¿Cuánto te está costando la capacidad que no usas?</h2>
+    <p>Sin registro y sin compromiso. Dos minutos para tener un número real enfrente.</p>
+    <a class="btn btn--gold" href="flujo.html">Calcular ahora</a>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="brand">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 2l8.66 5v10L12 22l-8.66-5V7z"/><path d="M12 8.2l3.9 2.25v4.5L12 17.2l-3.9-2.25v-4.5z" opacity=".55"/></svg>
+        <span class="word">Combwork</span>
+      </div>
+      <p>Optimización energética para operadores de centros de datos. Medimos la capacidad que ya pagas y no rinde.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Producto</h4>
+      <a href="flujo.html">Calculadora</a>
+      <a href="flujo.html">Benchmark de madurez</a>
+      <a href="index.html#pasos">Reporte institucional</a>
+    </div>
+    <div class="footer-col">
+      <h4>Compañía</h4>
+      <a href="empresa.html">Quiénes somos</a>
+      <a href="empresa.html#metodo">Nuestra tecnología</a>
+      <a href="empresa.html#insights">Insights</a>
+    </div>
+    <div class="footer-col">
+      <h4>Recursos</h4>
+      <a href="empresa.html#metodologia">Metodología del modelo</a>
+      <a href="empresa.html#liquido">Enfriamiento líquido</a>
+      <a href="index.html#colmena">Por qué Combwork</a>
+    </div>
+  </div>
+  <div class="footer-base">
+    <span>© 2026 COMBWORK</span>
+    <span>LAS PROYECCIONES SON ESTIMACIONES, NO COMPROMISOS DE AHORRO</span>
+  </div>
+</footer>
+
+<script>
+/* Brecha de PUE — se dibuja una vez y se queda quieto */
+(function(){
+  function draw(){
+    var slot = document.getElementById('pueGapSlot');
+    if (window.Combwork && slot) window.Combwork.pueGap(slot, { best:1.25, industry:1.58 });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', draw);
+  else draw();
+})();
+
+/* El CTA del header solo aparece cuando el hero ya salió de vista */
+(function(){
+  var hero = document.querySelector('.hero'), cta = document.getElementById('headerCta');
+  if(!hero || !cta) return;
+  if(!('IntersectionObserver' in window)){ cta.classList.add('show'); return; }
+  new IntersectionObserver(function(entries){
+    cta.classList.toggle('show', !entries[0].isIntersecting);
+  }, {rootMargin:'-70px 0px 0px 0px'}).observe(hero);
+})();
+
+/* Si el visitante ya calculó antes, la tarjeta recuerda su número */
+(function(){
+  try{
+    var s = JSON.parse(localStorage.getItem('combwork.session')||'null');
+    if(s && s.calc && s.calc.pue){
+      document.getElementById('proofPue').textContent = Number(s.calc.pue).toFixed(2);
+      document.getElementById('proofPos').textContent =
+        s.calc.pue <= 1.30 ? 'Mejores prácticas' : (s.calc.pue <= 1.58 ? 'Arriba del promedio' : 'Debajo del promedio');
+    }
+  }catch(e){}
+})();
+</script>
+</body>
+</html>

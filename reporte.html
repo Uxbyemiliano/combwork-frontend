@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#11231A">
+<title>Combwork — Reporte de Benchmark de Madurez</title>
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/reporte.css">
+</head>
+<body>
+
+<div class="bar noprint">
+  <div class="brand">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#D6B667" stroke-width="1.5" aria-hidden="true"><path d="M12 2l8.66 5v10L12 22l-8.66-5V7z"/></svg>
+    Reporte de Benchmark de Madurez
+  </div>
+  <div class="acts">
+    <span class="hint">En el diálogo de impresión elige «Guardar como PDF» y desactiva encabezados del navegador.</span>
+    <a href="flujo.html">← Volver</a>
+    <button class="primary" id="btnPrint">Descargar PDF</button>
+  </div>
+</div>
+
+<div class="sheetwrap" id="sheet"></div>
+
+<script src="assets/widgets.js"></script>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- Datos: sesión real o muestra -------------------------------- */
+  var DEMO = {
+    lead: { name: 'Marta Fuentes', company: 'Nortek Data Centers', email: 'marta@nortek.com', role: 'Directora de Infraestructura' },
+    calc: { itload: 4.2, pue: 1.72, price: 0.14, tier: '3', cooling: 'agua', growth: 12, targetPue: 1.33,
+            kwh: 63282240, cost: 8859514, overhead: 3708634, save: 2008843, save3y: 6778640,
+            payback: 8, industryPue: 1.58 },
+    result: {
+      score: 3.06, level: 'Intermedio', percentile: 62, generatedAt: new Date().toISOString(),
+      dims: [
+        { key:'eficiencia', dim:'Eficiencia energética', score:3, industry:3.2 },
+        { key:'cooling', dim:'Enfriamiento', score:2, industry:3.4 },
+        { key:'redundancia', dim:'Redundancia', score:4, industry:3.6 },
+        { key:'capacidad', dim:'Capacidad', score:3, industry:3.0 },
+        { key:'operacion', dim:'Madurez operativa', score:3, industry:2.9 },
+        { key:'ai', dim:'AI / GPU readiness', score:3, industry:2.4 },
+        { key:'sostenibilidad', dim:'Sostenibilidad', score:3, industry:2.7 }
+      ]
+    }
+  };
+  var data;
+  try { data = JSON.parse(localStorage.getItem('combwork.reporte') || 'null'); } catch (e) { data = null; }
+  if (!data || !data.result) data = DEMO;
+  data.result.gaps = data.result.gaps || data.result.dims.slice().sort(function(a,b){ return (a.score-a.industry)-(b.score-b.industry); }).slice(0,3);
+
+  var cfg = { name:'Nombre del fundador', mail:'founder@combwork.io', phone:'+52 55 0000 0000', link:'cal.com/combwork' };
+  try { var c = JSON.parse(localStorage.getItem('combwork.config')||'null'); if (c) cfg = Object.assign(cfg, c); } catch (e) {}
+
+  var L = data.lead || DEMO.lead, C = data.calc || DEMO.calc, R = data.result;
+
+  /* ---------- Formato ------------------------------------------------------ */
+  function money(n){ if(n==null||isNaN(n)) return '—';
+    return Math.abs(n)>=1e6 ? '$'+(n/1e6).toFixed(2)+'M' : '$'+Math.round(n/1000)+'K'; }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>]/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;'})[c];}); }
+  var hoy = new Date(R.generatedAt || Date.now()).toLocaleDateString('es-MX',{day:'numeric',month:'long',year:'numeric'});
+  function color(d){ return d.score < d.industry-0.6 ? '#C0392B' : d.score < d.industry ? '#E8A317' : '#18844F'; }
+
+  /* ---------- Banco de textos por dimensión y rango ------------------------ */
+  var TEXT = {
+    eficiencia: {
+      bajo:['La eficiencia energética no se mide con una periodicidad que permita corregir. Sin una serie de datos, cualquier mejora es imposible de atribuir.','Instrumentar la medición de PUE al menos mensual y fijar una línea base documentada antes de invertir en equipo.'],
+      medio:['Hay medición, pero llega tarde para operar sobre ella. El dato existe y no alcanza a cambiar decisiones del trimestre.','Pasar a medición continua en los puntos de mayor consumo y publicar el PUE como KPI visible del equipo.'],
+      alto:['La medición es continua y sostiene decisiones. Esta dimensión ya opera como referencia interna.','Sostener el ritmo y usar la serie histórica para negociar contratos de energía sobre consumo real.']
+    },
+    cooling: {
+      bajo:['No hay monitoreo continuo de la eficiencia de enfriamiento. Las anomalías térmicas se detectan cuando ya hay impacto en la operación.','Instalar sensores en tiempo real en las zonas de mayor carga térmica y definir umbrales de alerta por sala.'],
+      medio:['El monitoreo existe a nivel sala, lo que oculta puntos calientes locales que están consumiendo capacidad de enfriamiento de más.','Bajar la instrumentación a nivel rack en las zonas críticas y evaluar contención de pasillo caliente.'],
+      alto:['El enfriamiento está instrumentado al detalle y responde a datos, no a percepción.','Explorar economización y ajuste dinámico de setpoints para capturar el margen que queda.']
+    },
+    redundancia: {
+      bajo:['El esquema de redundancia no está documentado ni probado, así que su comportamiento real ante una falla es desconocido.','Documentar el esquema por sitio y programar la primera prueba controlada en los próximos 90 días.'],
+      medio:['Existe documentación y pruebas, pero con una frecuencia que deja ventanas largas sin verificación.','Subir a pruebas semestrales con bitácora firmada y agregar un simulacro anual de falla completa.'],
+      alto:['La redundancia se prueba con disciplina y hay evidencia de su comportamiento.','Usar los resultados de los simulacros como argumento comercial de disponibilidad ante clientes.']
+    },
+    capacidad: {
+      bajo:['La capacidad se resuelve de forma reactiva, lo que empuja a comprar potencia en condiciones desfavorables y con exceso.','Construir un modelo de capacidad a 12 meses que cruce crecimiento comercial con potencia y espacio disponibles.'],
+      medio:['Hay planeación, pero con un horizonte corto para el tiempo de entrega real del equipo eléctrico.','Extender el modelo a 24–36 meses e incorporar escenarios alto, base y bajo.'],
+      alto:['La planeación de capacidad ya trabaja con escenarios y horizontes largos.','Vincular el modelo al presupuesto energético para anticipar el costo, no solo la capacidad.']
+    },
+    operacion: {
+      bajo:['Facility y TI deciden por separado. Ahí es donde nace la capacidad que se paga y no produce.','Establecer una junta mensual con un tablero compartido y un dueño único del indicador de eficiencia.'],
+      medio:['Hay coordinación, pero sin métricas comunes que obliguen a decidir juntos.','Formalizar un comité con KPIs compartidos entre facility y TI, con revisión mensual.'],
+      alto:['Los equipos operan con datos y metas comunes. Es la condición que hace rentables las demás mejoras.','Documentar el modelo de gobierno: es replicable a nuevos sitios y acorta su curva de maduración.']
+    },
+    ai: {
+      bajo:['El facility no está preparado para cargas de alta densidad. Es la brecha que más rápido se vuelve crítica con demanda de GPU.','Hacer un estudio de factibilidad de alta densidad en una sala piloto: potencia por rack, distribución y disipación.'],
+      medio:['Hay avance parcial hacia alta densidad, concentrado en un piloto o en evaluación.','Definir la ruta de expansión de las zonas de alta densidad y su impacto en el plan de capacidad.'],
+      alto:['El facility soporta alta densidad de forma nativa o con zonas dedicadas ya operando.','Convertirlo en argumento de venta: es el criterio de selección de la mayoría de las cargas de IA.']
+    },
+    sostenibilidad: {
+      bajo:['No se reportan huella de carbono ni consumo de agua, lo que empieza a bloquear contratos con clientes corporativos.','Levantar la línea base de emisiones y WUE este año, aunque sea con reporte interno.'],
+      medio:['Hay reporte, pero sin auditoría ni metas públicas que lo hagan verificable frente a terceros.','Auditar el reporte anual y publicar metas con fecha.'],
+      alto:['La medición es continua y con metas públicas. Está por encima de lo que hace la mayoría del sector.','Usar la certificación como diferencial en licitaciones donde el criterio ambiental pesa.']
+    }
+  };
+  function band(d){ return d.score <= 2 ? 'bajo' : d.score <= 3.5 ? 'medio' : 'alto'; }
+  function textOf(d){ var t = TEXT[d.key] || TEXT.eficiencia; return t[band(d)]; }
+
+  /* ---------- Radar --------------------------------------------------------- */
+  var SHORT = { 'Eficiencia energética':'Eficiencia', 'Enfriamiento':'Enfriamiento', 'Redundancia':'Redundancia',
+    'Capacidad':'Capacidad', 'Madurez operativa':'Operación', 'AI / GPU readiness':'AI ready', 'Sostenibilidad':'Sostenib.' };
+  function radar(dims, size){
+    var n=dims.length, cx=size/2, cy=size/2, R=size/2-38;
+    function pt(i,r){ var a=-Math.PI/2+i*2*Math.PI/n; return [cx+Math.cos(a)*r, cy+Math.sin(a)*r]; }
+    function poly(vals,f){ return vals.map(function(v,i){ var p=pt(i,R*(v/5)*(f||1)); return p[0].toFixed(1)+','+p[1].toFixed(1); }).join(' '); }
+    var full = dims.map(function(){return 5;});
+    var rings = [1,.75,.5,.25].map(function(f){
+      return '<polygon points="'+poly(full,f)+'" fill="none" stroke="#CFDDD0" stroke-width="1"/>'; }).join('');
+    var spokes = dims.map(function(d,i){ var p=pt(i,R);
+      return '<line x1="'+cx+'" y1="'+cy+'" x2="'+p[0].toFixed(1)+'" y2="'+p[1].toFixed(1)+'" stroke="#CFDDD0"/>'; }).join('');
+    var labels = dims.map(function(d,i){ var p=pt(i,R+18);
+      var anchor = Math.abs(p[0]-cx)<6 ? 'middle' : (p[0]>cx ? 'start':'end');
+      var name = SHORT[d.dim] || d.dim;
+      return '<text x="'+p[0].toFixed(1)+'" y="'+(p[1]+3).toFixed(1)+'" text-anchor="'+anchor+'" font-family="IBM Plex Sans" font-size="8" fill="#61715F">'+esc(name)+'</text>'; }).join('');
+    return '<svg viewBox="0 0 '+size+' '+size+'" width="'+size+'" height="'+size+'" role="img" aria-label="Radar de madurez">'+
+      rings+spokes+
+      '<polygon points="'+poly(dims.map(function(d){return d.industry;}))+'" fill="none" stroke="#18844F" stroke-width="1.3" stroke-dasharray="4 3"/>'+
+      '<polygon points="'+poly(dims.map(function(d){return d.score;}))+'" fill="#F5BC3E" fill-opacity=".42" stroke="#E8A317" stroke-width="1.8"/>'+
+      labels+'</svg>';
+  }
+
+  function bar(d){
+    return '<div class="barrow"><div class="top"><span>'+esc(d.dim)+'</span><span>'+d.score.toFixed(1)+' / 5</span></div>'+
+      '<div class="tr"><i style="width:'+(d.score/5*100)+'%;background:'+color(d)+'"></i>'+
+      '<span class="ind" style="left:'+(d.industry/5*100)+'%"></span></div></div>';
+  }
+
+  function foot(n){
+    return '<div class="foot"><span>COMBWORK · REPORTE DE BENCHMARK DE MADUREZ · '+esc(L.company).toUpperCase()+'</span><span>'+n+' / 8</span></div>';
+  }
+  function head(t){ return '<div class="logo"><span class="mk"></span>COMBWORK</div><div class="rule-thin"></div><h2 class="ph">'+t+'</h2>'; }
+
+  /* ---------- Roadmap ------------------------------------------------------- */
+  function roadmap(){
+    var sorted = R.dims.slice().sort(function(a,b){ return (a.score-a.industry)-(b.score-b.industry); });
+    var stages = [
+      ['Quick win · 0–3 meses', sorted[0]],
+      ['Quick win · 0–3 meses', sorted[1]],
+      ['Proyecto medio · 3–9 meses', sorted[2]],
+      ['Proyecto largo · 9–18 meses', sorted[3]]
+    ];
+    return stages.map(function(s){
+      return '<div class="rmcard"><span class="stg">'+s[0]+' · '+esc(s[1].dim)+'</span><p>'+esc(textOf(s[1])[1])+'</p></div>';
+    }).join('');
+  }
+
+  /* ---------- Páginas -------------------------------------------------------- */
+  var g1 = R.gaps[0], g2 = R.gaps[1];
+  var pages = [];
+
+  // 1 · Portada
+  // ▨ SLOT · pdf-01-portada · 2:3 · 1240×1754 · fondo de la portada
+  pages.push('<section class="page page--dark cover">'+
+    '<div class="logo"><span class="mk"></span>COMBWORK</div>'+
+    '<div class="rule-gold"></div>'+
+    '<h1>Reporte de Benchmark de Madurez</h1>'+
+    '<div class="meta"><div>Preparado para '+esc(L.company)+'</div><div>'+esc(L.name)+' · '+esc(L.role||'')+'</div><div>'+hoy+'</div></div>'+
+    '<div class="swatch2"></div><div class="swatch"></div>'+
+    '</section>');
+
+  // 2 · Cómo leer este reporte
+  pages.push('<section class="page">'+head('Cómo leer este reporte')+
+    '<p class="body">Tu Score de Madurez se calcula a partir de siete dimensiones operativas. Cada una se compara contra el promedio de operadores de tamaño y región similares, y contra tu propio margen de mejora.</p>'+
+    '<p class="body">Para subir el score, empieza por las dimensiones donde quedaste más abajo del promedio de industria. Cada página de detalle cierra con una recomendación concreta para discutir con tu equipo.</p>'+
+    '<div class="dimchips">'+ R.dims.map(function(d){
+      return '<div class="dimchip"><div class="dot"></div><span>'+esc(d.dim)+'</span></div>'; }).join('') +'</div>'+
+    '<div class="tracebox"><span class="lbl">Datos que ingresaste</span><table>'+
+      '<tr><td>Carga de TI</td><td>'+C.itload+' MW</td></tr>'+
+      '<tr><td>PUE actual</td><td>'+Number(C.pue).toFixed(2)+'</td></tr>'+
+      '<tr><td>Precio de electricidad</td><td>$'+Number(C.price).toFixed(2)+' USD / kWh</td></tr>'+
+      '<tr><td>Tier de redundancia</td><td>Tier '+['','I','II','III','IV'][Number(C.tier)||3]+'</td></tr>'+
+      '<tr><td>Arquitectura de enfriamiento</td><td>'+esc(C.cooling)+'</td></tr>'+
+      '<tr><td>Crecimiento anual esperado</td><td>'+C.growth+'%</td></tr>'+
+      '<tr><td>PUE objetivo usado</td><td>'+Number(C.targetPue||1.3).toFixed(2)+'</td></tr>'+
+    '</table></div>'+
+    '<div class="srcbox"><p>Metodología basada en referencias públicas de Uptime Institute y The Green Grid. Versión del modelo: 2026.1. Generado el '+hoy+' desde combwork.io.</p></div>'+
+    foot(2)+'</section>');
+
+  // 3 · Resumen ejecutivo
+  pages.push('<section class="page">'+head('Resumen ejecutivo')+
+    '<p class="body">Tu operación obtuvo un nivel de madurez <strong style="color:#11231A">'+esc(R.level)+'</strong>, en el percentil '+R.percentile+
+    ' frente a operadores comparables. Con tu PUE de '+Number(C.pue).toFixed(2)+' contra 1.58 de promedio de industria, '+money(C.overhead)+
+    ' al año se van en capacidad que no produce carga útil.</p>'+
+    '<div class="kpis">'+
+      '<div class="kpi"><span class="k">Score general</span><span class="v">'+R.score.toFixed(1)+' / 5</span><div class="d">Nivel '+esc(R.level)+'</div></div>'+
+      '<div class="kpi"><span class="k">Ahorro alcanzable</span><span class="v">'+money(C.save)+'</span><div class="d">por año</div></div>'+
+      '<div class="kpi"><span class="k">Retorno estimado</span><span class="v">'+(C.payback?Math.round(C.payback)+' meses':'—')+'</span><div class="d">sobre inversión típica</div></div>'+
+    '</div>'+
+    '<span class="lbl">A dónde se va tu energía</span>'+
+    '<div id="pdfSankey" style="margin:6px 0 14px"></div>'+
+    '<span class="lbl">Score por dimensión · la marca vertical es el promedio de industria</span>'+
+    R.dims.slice(0,4).map(bar).join('')+
+    '<div class="srcbox"><p>Las proyecciones económicas parten de los datos que tú ingresaste y de referencias públicas del sector. Son estimaciones, no compromisos.</p></div>'+
+    foot(3)+'</section>');
+
+  // 4 · Radar + percentil
+  pages.push('<section class="page">'+head('Tu operación, celda por celda')+
+    '<p class="body">Cada celda es una dimensión. Qué tan llena está es tu score; la línea punteada que la cruza es el promedio de tu industria. Donde el relleno no alcanza la línea, hay distancia que cerrar.</p>'+
+    '<div id="pdfHoney" style="margin:14px 0 8px"></div>'+
+    '<div class="band"><div><span class="k">Percentil de industria</span><span class="v">'+R.percentile+' de 100</span></div>'+
+      '<div style="text-align:right"><span class="k">Nivel</span><span class="v">'+esc(R.level)+'</span></div></div>'+
+    foot(4)+'</section>');
+
+  // 5 y 6 · Páginas por dimensión (las dos brechas principales)
+  [g1, g2].forEach(function(d, i){
+    var t = textOf(d);
+    pages.push('<section class="page">'+head(esc(d.dim))+
+      '<p class="body">Brecha '+(i+1)+' de tu operación. Tu score es '+d.score.toFixed(1)+' contra '+d.industry.toFixed(1)+
+      ' del promedio de industria.</p>'+
+      '<div style="display:flex;gap:22px;align-items:center;margin:16px 0">'+
+        '<svg width="110" height="72" viewBox="0 0 110 72" aria-hidden="true">'+
+          '<path d="M8 66 A47 47 0 0 1 102 66" fill="none" stroke="#EFE9D8" stroke-width="9"/>'+
+          '<path d="M8 66 A47 47 0 0 1 '+(55-47*Math.cos(Math.PI*(d.score/5))).toFixed(2)+' '+
+            (66-47*Math.sin(Math.PI*(d.score/5))).toFixed(2)+
+            '" fill="none" stroke="'+color(d)+'" stroke-width="9"/>'+
+          '<text x="55" y="58" text-anchor="middle" font-family="IBM Plex Sans" font-weight="700" font-size="19" fill="#19211A">'+d.score.toFixed(1)+'</text>'+
+        '</svg>'+
+        '<div style="flex:1">'+bar(d)+'<p style="font-size:9.5px;color:#8B9486;margin:4px 0 0">La marca vertical señala el promedio de industria ('+d.industry.toFixed(1)+').</p></div>'+
+      '</div>'+
+      '<div class="findbox"><strong>Hallazgo</strong><p>'+esc(t[0])+'</p></div>'+
+      '<div class="findbox"><strong>Recomendación</strong><p>'+esc(t[1])+'</p></div>'+
+      '<div class="findbox" style="border-left-color:#2C5B3E"><strong>Impacto económico estimado</strong><p>Cerrar esta brecha es parte del camino hacia un PUE de '+
+        Number(C.targetPue||1.3).toFixed(2)+', que en tu operación representa hasta '+money(C.save)+' al año y '+money(C.save3y)+
+        ' acumulados a tres años con tu crecimiento declarado.</p></div>'+
+      foot(5+i)+'</section>');
+  });
+
+  // 7 · Roadmap
+  pages.push('<section class="page">'+head('Roadmap priorizado')+
+    '<p class="body">Ordenado por distancia contra el promedio de industria y por facilidad de implementación. No todos los puntajes bajos importan igual: los primeros dos son los que mueven el score con menos inversión.</p>'+
+    roadmap()+
+    '<div class="tracebox"><span class="lbl">Cómo se calculó tu ahorro</span><table>'+
+      '<tr><td>Consumo anual estimado</td><td>'+Math.round((C.kwh||0)/1e6).toLocaleString('en-US')+' GWh</td></tr>'+
+      '<tr><td>Costo energético anual</td><td>'+money(C.cost)+'</td></tr>'+
+      '<tr><td>Overhead del facility (PUE − 1)</td><td>'+money(C.overhead)+'</td></tr>'+
+      '<tr><td>Costo con PUE objetivo</td><td>'+money(C.cost-C.save)+'</td></tr>'+
+      '<tr><td>Ahorro anual alcanzable</td><td>'+money(C.save)+'</td></tr>'+
+    '</table></div>'+
+    foot(7)+'</section>');
+
+  // 8 · Contacto y cierre
+  pages.push('<section class="page">'+head('Hablemos de tus resultados')+
+    '<p class="body">Si quieres revisar este reporte en detalle o discutir el roadmap con tu equipo, agenda una llamada directa. La conversación es sobre tus números, no sobre nuestro catálogo.</p>'+
+    '<div class="cbox"><div class="avatar"></div><div>'+
+      '<div class="cname">'+esc(cfg.name)+'</div>'+
+      '<div class="crole">Fundador — Combwork</div>'+
+      '<div class="cline">'+esc(cfg.mail)+'</div>'+
+      '<div class="cline">'+esc(cfg.phone)+' · LinkedIn</div>'+
+      '<div class="cline">'+esc(cfg.link)+'</div>'+
+    '</div></div>'+
+    '<div style="text-align:center"><a class="ctabtn" href="https://'+esc(cfg.link)+'">Agendar una llamada</a></div>'+
+    '<div class="disclaimer"><strong>Sobre estas cifras.</strong> Este reporte es una estimación construida con los datos que tú ingresaste y con referencias públicas de industria. Los resultados individuales varían según diseño, clima, contratos de energía y perfil de carga, y no constituyen un compromiso de ahorro. Generado el '+hoy+' para '+esc(L.company)+' ('+esc(L.email)+'). Versión del modelo 2026.1.</div>'+
+    foot(8)+'</section>');
+
+  document.getElementById('sheet').innerHTML = pages.join('');
+
+  /* Widgets del reporte — sin animación, el PDF es estático */
+  if (window.Combwork) {
+    var honeyEl = document.getElementById('pdfHoney');
+    if (honeyEl) window.Combwork.honeycomb(honeyEl, R.dims, { animate:false, interactive:false });
+    var skEl = document.getElementById('pdfSankey');
+    if (skEl) {
+      var useful = C.cost - C.overhead;
+      window.Combwork.sankey(skEl, {
+        total: C.cost, useful: useful, overhead: C.overhead,
+        totalLabel: money(C.cost), usefulLabel: money(useful), overheadLabel: money(C.overhead),
+        breakdown: [
+          { name:'Enfriamiento',        value:C.overhead*0.64, label:money(C.overhead*0.64) },
+          { name:'UPS y distribución',  value:C.overhead*0.27, label:money(C.overhead*0.27) },
+          { name:'Iluminación y otros', value:C.overhead*0.09, label:money(C.overhead*0.09) }
+        ]
+      }, { animate:false });
+    }
+  }
+
+  /* ---------- Impresión ------------------------------------------------------ */
+  document.getElementById('btnPrint').addEventListener('click', function(){ window.print(); });
+  if (location.search.indexOf('print=1') >= 0) {
+    setTimeout(function(){ window.print(); }, 900);
+  }
+})();
+</script>
+</body>
+</html>

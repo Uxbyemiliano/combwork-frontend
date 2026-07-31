@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#11231A">
+<title>Combwork — Panel interno</title>
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<div class="panel">
+  <!-- ══════ NAVEGACIÓN (lateral en desktop, inferior en móvil) ══════ -->
+  <nav class="panel-side">
+    <a class="brand" href="index.html" style="color:#F5F1E4">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 2l8.66 5v10L12 22l-8.66-5V7z"/><path d="M12 8.2l3.9 2.25v4.5L12 17.2l-3.9-2.25v-4.5z" opacity=".55"/></svg>
+      <span class="word">Combwork</span>
+    </a>
+
+    <button class="nav-item on" data-view="resumen">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 13h6V3H3zM15 21h6V11h-6zM3 21h6v-4H3zM15 7h6V3h-6z"/></svg>Resumen</button>
+    <button class="nav-item" data-view="leads">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/></svg>Leads</button>
+    <button class="nav-item" data-view="campanas">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 11l18-8-8 18-2-7-8-3z"/></svg>Campañas</button>
+    <button class="nav-item" data-view="benchmarks">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2l8.66 5v10L12 22l-8.66-5V7z"/><path d="M12 22V12l8.66-5"/></svg>Benchmarks</button>
+    <button class="nav-item" data-view="config">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-2.9 1.17V21a2 2 0 11-4 0v-.09A1.65 1.65 0 007 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 003 15a1.65 1.65 0 00-1.51-1H1a2 2 0 110-4h.09A1.65 1.65 0 003 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 3h.09A1.65 1.65 0 0011 1.51V1a2 2 0 114 0v.09a1.65 1.65 0 001.51 1.42"/></svg>Ajustes</button>
+
+    <div class="spacer"></div>
+    <div class="side-foot" style="padding:10px 12px;border-top:1px solid rgba(255,255,255,.1)">
+      <div class="sub" style="color:rgba(246,243,234,.5);font-size:11px" id="whoami">equipo@combwork.io</div>
+      <button class="nav-item" id="logout" style="margin-top:6px;padding:6px 0;color:var(--gold-300);font-size:12px">Cerrar sesión</button>
+    </div>
+  </nav>
+
+  <!-- ══════ CONTENIDO ══════ -->
+  <main class="panel-body">
+
+    <!-- ─── RESUMEN ─── -->
+    <section class="panel-view active" data-view="resumen">
+      <div class="panel-topbar row-between mb5">
+        <div>
+          <h1 class="t-h3 mb0">Resumen general</h1>
+          <span class="sub" id="updatedAt">Actualizado hace unos segundos</span>
+        </div>
+        <a class="btn btn--ghost btn--sm" href="flujo.html" target="_blank">Ver el flujo público ↗</a>
+      </div>
+
+      <div class="kpi-row">
+        <div class="kpi"><span class="k">Leads totales</span><span class="v" id="kLeads">0</span><div class="d" id="kLeadsD">—</div></div>
+        <div class="kpi"><span class="k">Score promedio</span><span class="v" id="kScore">—</span><div class="d" id="kScoreD">—</div></div>
+        <div class="kpi"><span class="k">Completitud</span><span class="v" id="kComp">—</span><div class="d">Calculadora → benchmark</div></div>
+        <div class="kpi"><span class="k">Campañas activas</span><span class="v" id="kCamp">0</span><div class="d" id="kCampD">—</div></div>
+      </div>
+
+      <div class="panel-grid">
+        <div class="panel-card">
+          <div class="row-between mb3"><h3 class="mb0">Leads recientes</h3><button class="btn btn--ghost btn--sm" data-view-link="leads">Ver todos</button></div>
+          <div class="table-wrap is-stacked">
+            <table class="table-stack">
+              <thead><tr><th>Empresa</th><th>Segmento</th><th>Brecha principal</th><th>Reporte</th></tr></thead>
+              <tbody id="recentLeads"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="panel-card">
+          <h3>Score promedio por dimensión</h3>
+          <div id="dimAgg"></div>
+          <p class="sub mt4 mb0">El rojo marca dónde la base completa de leads está por debajo del promedio de industria. Ahí es donde el pitch tiene más tracción.</p>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <h3>Campañas de outreach</h3>
+        <div id="campSummary"></div>
+      </div>
+    </section>
+
+    <!-- ─── LEADS ─── -->
+    <section class="panel-view" data-view="leads">
+      <div class="panel-topbar row-between mb4" style="flex-wrap:wrap;gap:12px">
+        <div><h1 class="t-h3 mb0">Leads</h1><span class="sub" id="leadCount">—</span></div>
+        <div class="row" style="gap:8px;flex-wrap:wrap">
+          <input class="field" id="leadSearch" placeholder="Buscar empresa o correo" style="width:220px">
+          <select class="field" id="leadFilter" style="width:160px">
+            <option value="">Todos los segmentos</option><option value="Alto">Alto</option>
+            <option value="Medio">Medio</option><option value="Bajo">Bajo</option>
+          </select>
+          <button class="btn btn--ghost btn--sm" id="exportCsv">Exportar CSV</button>
+        </div>
+      </div>
+
+      <div class="table-wrap is-stacked">
+        <table class="table-stack">
+          <thead><tr><th>Empresa</th><th>Contacto</th><th>Segmento</th><th>Score</th><th>Brecha principal</th><th>Reporte</th><th>Origen</th></tr></thead>
+          <tbody id="leadsTable"></tbody>
+        </table>
+      </div>
+      <div class="empty hide" id="leadsEmpty">
+        <!-- ▨ SLOT · panel-01-vacio · recorte PNG · 600×600 -->
+        <figure class="artcut artcut--md" style="margin:0 auto 16px" data-slot="panel-01-vacio">
+          <div class="slot-ph"><svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><rect x="18" y="16" width="84" height="88" rx="4"/><path d="M30 16v88M90 16v88M18 34h84"/><path d="M42 52l18 10 18-10M42 72l18 10 18-10" opacity=".5"/></svg></div>
+        </figure>
+        Todavía no hay leads con ese filtro. En cuanto un operador complete el benchmark aparece aquí.
+      </div>
+    </section>
+
+    <!-- ─── CAMPAÑAS ─── -->
+    <section class="panel-view" data-view="campanas">
+      <div class="panel-topbar row-between mb4">
+        <div><h1 class="t-h3 mb0">Campañas de outreach</h1><span class="sub">Subir lista, elegir plantilla, medir completitud</span></div>
+      </div>
+
+      <div class="panel-grid">
+        <div>
+          <!-- paso 1 -->
+          <div class="panel-card mb4">
+            <div class="row-between mb3"><h3 class="mb0">1 · Subir lista de contactos</h3><span class="chip" id="rowCount">0 filas</span></div>
+            <div class="drop" id="drop" tabindex="0" role="button" aria-label="Subir archivo CSV">
+              <div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div>
+              <strong style="font-size:13.5px;color:var(--forest-900);display:block">Arrastra tu archivo o haz clic para buscarlo</strong>
+              <span class="sub">CSV con nombre, empresa y correo · máximo 5,000 filas</span>
+              <input type="file" id="csvInput" accept=".csv,text/csv" class="sr-only">
+            </div>
+            <p class="sub mt3">¿No tienes un CSV a la mano? <button class="btn-link" id="loadSample" style="font-size:12.5px">Cargar una lista de ejemplo</button></p>
+            <div class="table-wrap is-stacked mt4 hide" id="previewWrap">
+              <table class="table-stack">
+                <thead><tr><th>Nombre</th><th>Empresa</th><th>Correo</th><th>Validación</th></tr></thead>
+                <tbody id="csvPreview"></tbody>
+              </table>
+            </div>
+            <p class="sub mt3 mb0 hide" id="csvSummary"></p>
+          </div>
+
+          <!-- paso 2 -->
+          <div class="panel-card">
+            <h3>2 · Configurar la campaña</h3>
+            <div class="field-group">
+              <label class="lbl" for="campName">Nombre de la campaña</label>
+              <input class="field" id="campName" placeholder="ej. Onboarding Q3 — data centers LATAM">
+            </div>
+            <span class="lbl">Plantilla de invitación</span>
+            <div class="tpl sel" data-tpl="estandar">
+              <div class="tn">Invitación estándar</div>
+              <div class="ts">«Descubre en qué percentil está tu operación frente a tu industria»</div>
+            </div>
+            <div class="tpl" data-tpl="evento">
+              <div class="tn">Referido de evento</div>
+              <div class="ts">Menciona el evento donde se conoció al contacto</div>
+            </div>
+            <div class="tpl" data-tpl="followup">
+              <div class="tn">Seguimiento por baja completitud</div>
+              <div class="ts">Para quienes abrieron la invitación y no terminaron el benchmark</div>
+            </div>
+            <button class="btn btn--block mt4" id="sendCamp" disabled>Enviar invitaciones</button>
+            <p class="sub mt3 mb0">Las invitaciones salen en cola. El embudo empieza a poblarse conforme los contactos abren el correo.</p>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <h3>3 · Completitud por campaña</h3>
+          <div id="campList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── BENCHMARKS ─── -->
+    <section class="panel-view" data-view="benchmarks">
+      <div class="panel-topbar mb4">
+        <h1 class="t-h3 mb0">Benchmarks acumulados</h1>
+        <span class="sub">Las respuestas de todos los operadores, agregadas por dimensión</span>
+      </div>
+      <div class="panel-grid">
+        <div class="panel-card">
+          <h3>Distribución por nivel de madurez</h3>
+          <div id="levelDist"></div>
+          <p class="sub mt4 mb0">El segmento «Bajo» es el de mayor urgencia declarada y el de ciclo de venta más corto. El «Alto» sirve como caso de referencia.</p>
+        </div>
+        <div class="panel-card">
+          <h3>Dimensión con más brechas</h3>
+          <div id="gapRank"></div>
+        </div>
+      </div>
+      <div class="panel-card mt4">
+        <h3>Todas las respuestas</h3>
+        <div class="table-wrap is-stacked">
+          <table class="table-stack">
+            <thead><tr><th>Empresa</th><th>Nivel</th><th>Percentil</th><th>Score</th><th>Brecha</th><th>Fecha</th></tr></thead>
+            <tbody id="benchTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── AJUSTES ─── -->
+    <section class="panel-view" data-view="config">
+      <div class="panel-topbar mb4">
+        <h1 class="t-h3 mb0">Ajustes</h1>
+        <span class="sub">Configuración de la cuenta</span>
+      </div>
+      <div class="panel-grid">
+        <div class="panel-card">
+          <h3>Datos de la cuenta</h3>
+          <p class="sub">Restablece la base a su estado inicial o vacíala por completo. La acción no se puede deshacer.</p>
+          <div class="flex-end" style="justify-content:flex-start;margin-top:14px">
+            <button class="btn btn--ghost btn--sm" id="reseed">Restablecer base</button>
+            <button class="btn btn--ghost btn--sm" id="wipe">Borrar todo</button>
+          </div>
+        </div>
+        <div class="panel-card">
+          <h3>Bloque de contacto del reporte</h3>
+          <div class="field-group"><label class="lbl" for="cfgName">Nombre del fundador</label><input class="field" id="cfgName" placeholder="Nombre del fundador"></div>
+          <div class="field-group"><label class="lbl" for="cfgMail">Correo</label><input class="field" id="cfgMail" placeholder="founder@combwork.io"></div>
+          <div class="field-group"><label class="lbl" for="cfgPhone">Teléfono</label><input class="field" id="cfgPhone" placeholder="+52 ..."></div>
+          <div class="field-group"><label class="lbl" for="cfgLink">Link para agendar</label><input class="field" id="cfgLink" placeholder="cal.com/combwork"></div>
+          <button class="btn btn--sm" id="saveCfg">Guardar</button>
+          <p class="sub mt3 mb0">Estos datos entran en la página 7 del reporte institucional.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Panel lateral de detalle del lead -->
+<div class="lead-detail" id="leadDetail">
+  <div class="scrim" data-close></div>
+  <div class="sheet">
+    <div class="row-between mb4">
+      <span class="eyebrow mb0">Detalle del lead</span>
+      <button class="btn btn--ghost btn--sm" data-close>Cerrar</button>
+    </div>
+    <div id="leadDetailBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="assets/panel.js"></script>
+</body>
+</html>
